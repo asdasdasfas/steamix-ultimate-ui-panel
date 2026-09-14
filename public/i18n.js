@@ -2447,10 +2447,15 @@ function setLanguage(lang) {
   return false;
 }
 
-// Gespeicherte Sprache laden
+// Türkçe fallback: tr eksikse en'den al, varsayılan tr
+for (const k in translations.en) if (!(k in translations.tr)) translations.tr[k] = translations.en[k];
+translations.tr.title = 'Steamix TV ULTIMATE';
 const savedLang = localStorage.getItem('language');
 if (savedLang && translations[savedLang]) {
   currentLang = savedLang;
+} else if (!savedLang) {
+  currentLang = 'tr';
+  localStorage.setItem('language','tr');
 }
 
 // Export für ES6 Module

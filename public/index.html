@@ -30,8 +30,21 @@
   <script>
     (function(){
       const s=document.getElementById('splash');
+      const hasSession = !!(localStorage.getItem('token') || localStorage.getItem('authToken') || localStorage.getItem('jwt'));
+      const dur = hasSession ? 3500 : 6000;
+      const bar = document.getElementById('splash-bar');
+      const txt = s ? s.querySelector('div[style*="Yükleniyor"]') : null;
+      if(hasSession && s){
+        s.querySelector('h1').innerHTML='Steamix <span style="color:#0099ff">TV</span>';
+        s.querySelector('p').textContent='Yükleniyor...';
+        s.querySelectorAll('p')[1].innerHTML='Oturum açık, panel hazırlanıyor';
+        if(txt) txt.textContent='Yükleniyor...';
+      }
       if(s) s.addEventListener('click',()=>{s.style.opacity='0'; setTimeout(()=>{try{s.remove()}catch{ s.style.display='none'}},400)});
-      setTimeout(()=>{const el=document.getElementById('splash'); if(el){el.style.opacity='0'; setTimeout(()=>{try{el.remove()}catch{ el.style.display='none'}},900)}},6000);
+      // CSS fallback süresini de güncelle
+      s.style.animation = `splashHide 0.9s ease ${dur}ms forwards`;
+      if(bar) bar.style.animationDuration = hasSession ? '0.9s' : '1.1s';
+      setTimeout(()=>{const el=document.getElementById('splash'); if(el){el.style.opacity='0'; setTimeout(()=>{try{el.remove()}catch{ el.style.display='none'}},900)}},dur);
     })();
   </script>
 
@@ -1547,14 +1560,12 @@
       const nb=document.getElementById('main-navbar');
       const sb=document.getElementById('sidebar');
       if(nb && sb){
-        if(!nb.classList.contains('d-none')) sb.classList.remove('d-none'); sb.classList.add('d-flex');
-        // sync language selectors
+        if(!nb.classList.contains('d-none')){ sb.classList.remove('d-none'); sb.classList.add('d-flex'); nb.classList.add('d-none'); }
+        else { /* login ekranında sidebar gizli kalsın */ }
         const a=document.getElementById('language-selector'), b=document.getElementById('language-selector-side');
         if(a&&b&&a.value!==b.value) b.value=a.value;
       }
-      // view transition trigger
-      document.querySelectorAll('[data-view]').forEach(el=>el.addEventListener('click',()=>{const m=document.getElementById('main-content'); if(m){m.style.animation='none'; m.offsetHeight; m.style.animation='';}}));
-    },600);
+    },500);
     // sidebar nav active sync
     document.addEventListener('click',e=>{
       const t=e.target.closest('[data-view]'); if(!t) return;
