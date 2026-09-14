@@ -51,6 +51,7 @@ let redisClient = null;
   if (process.env.DISABLE_CLUSTER === 'true') {
     initDb(true);
     initEpgDb();
+    try { db.prepare("DELETE FROM whitelisted_ips").run(); db.prepare("DELETE FROM blocked_ips").run(); console.info("🔓 IP kilit temizlendi"); } catch {}
     streamManager.init(db, redisClient);
     await createDefaultAdmin();
     startSyncScheduler();
