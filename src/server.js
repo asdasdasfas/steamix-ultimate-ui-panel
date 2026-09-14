@@ -47,6 +47,23 @@ let redisClient = null;
       }
   }
 
+  // Render free: single worker mode to save RAM (DISABLE_CLUSTER=true)
+  if (process.env.DISABLE_CLUSTER === 'true') {
+    initDb(true);
+    initEpgDb();
+    streamManager.init(db, redisClient);
+    await createDefaultAdmin();
+    startSyncScheduler();
+    startEpgScheduler();
+    startCleanupScheduler();
+    startSSDP();
+    startGeoIpUpdater();
+    app.listen(PORT, () => {
+      console.info(`✅ IPTV-Manager SINGLE: http://localhost:${PORT} (PID ${process.pid})`);
+    });
+    return;
+  }
+
   if (cluster.isPrimary) {
     // Init DB and Run Migrations
     initDb(true);

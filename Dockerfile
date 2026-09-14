@@ -32,7 +32,8 @@ ENV DATA_DIR=/data
 ENV PORT=3000
 ENV NODE_ENV=production
 ENV AI_CODEX_ENABLED=false
-ENV NODE_OPTIONS=--max-old-space-size=400
+ENV DISABLE_CLUSTER=true
+ENV NODE_OPTIONS=--max-old-space-size=350
 
 # Create data directory
 RUN mkdir -p /data
