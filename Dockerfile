@@ -33,6 +33,7 @@ ENV PORT=3000
 ENV NODE_ENV=production
 ENV AI_CODEX_ENABLED=false
 ENV DISABLE_CLUSTER=true
+ENV TRUST_PROXY=true
 ENV NODE_OPTIONS=--max-old-space-size=350
 
 # Create data directory
