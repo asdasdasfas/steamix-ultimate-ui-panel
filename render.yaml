@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: steamix-ultimate-ui-panel
+    env: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /data
+      - key: PORT
+        value: 10000

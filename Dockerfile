@@ -2,8 +2,9 @@ FROM node:24-alpine
 
 WORKDIR /app
 
-# Install build dependencies for native modules
-RUN apk add --no-cache python3 make g++ su-exec
+# Install build dependencies for native modules + litestream for R2 persistence (Render free ephemeral fix)
+RUN apk add --no-cache python3 make g++ su-exec curl
+RUN curl -sL https://github.com/benbjohnson/litestream/releases/download/v0.3.13/litestream-v0.3.13-linux-amd64.tar.gz | tar -xz -C /usr/local/bin litestream && chmod +x /usr/local/bin/litestream
 
 # Ship the same pinned account runtime as the Debian/Ubuntu installer.
 # The host must also permit the nested sandbox (see docs/CONFIGURATION.md).
@@ -17,6 +18,8 @@ COPY package.json package-lock.json ./
 
 # Install dependencies
 RUN npm ci --omit=dev
+
+COPY litestream.yml /etc/litestream.yml
 
 # Copy application code
 COPY src ./src
@@ -46,6 +49,6 @@ EXPOSE 3000
 # Define volume for data persistence
 VOLUME ["/data"]
 
-# Start application
+# Start with litestream replication (R2 persistence) - restores on boot, replicates on write
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["npm", "start"]
+CMD ["sh","-c","litestream restore -if-replica-exists -o /data/db.sqlite s3://steamix-panel-db/db.sqlite || true; litestream restore -if-replica-exists -o /data/epg.db s3://steamix-panel-db/epg.db || true; litestream replicate --exec \"npm start\""]

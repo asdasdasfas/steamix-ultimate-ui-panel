@@ -1,0 +1,17 @@
+dbs:
+  - path: /data/db.sqlite
+    replicas:
+      - url: s3://steamix-panel-db/db.sqlite
+        endpoint: https://ed765e092b64b82f630422a87d497af2.r2.cloudflarestorage.com
+        region: auto
+        access-key-id: 0889110257d74f9b0a303803ca07fe68
+        secret-access-key: d7980396785205b2d859abd4d1284a35c3c5a72eeabe89fb8e7962a8496f7275
+        sync-interval: 1s
+  - path: /data/epg.db
+    replicas:
+      - url: s3://steamix-panel-db/epg.db
+        endpoint: https://ed765e092b64b82f630422a87d497af2.r2.cloudflarestorage.com
+        region: auto
+        access-key-id: 0889110257d74f9b0a303803ca07fe68
+        secret-access-key: d7980396785205b2d859abd4d1284a35c3c5a72eeabe89fb8e7962a8496f7275
+        sync-interval: 5s
