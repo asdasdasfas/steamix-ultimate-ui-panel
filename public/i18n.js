@@ -662,6 +662,15 @@ const translations = {
     browse: 'Gözat',
     updateAll: 'Tümünü Güncelle',
     clearEpg: 'EPG Temizle',
+    helpUserManagement: 'Müşterilerini oluşturur, her birine süre ve cihaz sınırı verirsin. Örn: Ahmet için 1 ay, 2 cihaz.',
+    helpProviderManagement: 'CTN34 gibi kaynak linklerini eklediğin yer. Birden fazla M3U/Xtream ekleyebilirsin.',
+    helpCategories: 'Kendi paketlerini oluşturduğun yer. Seçtiğin kanalları sürükle-bırak ile dizersin.',
+    helpChannels: 'Sağdan soldan kanal seçip paketine eklersin. Sağ taraf müşterinin göreceği liste.',
+    helpXtream: 'Müşteriye vereceğin M3U / Xtream linki burada. TiviMate’e yapıştırıp izler.',
+    helpBackups: 'Paketlerini yedeklersin, bozulursa tek tıkla geri yüklersin.',
+    helpEpg: 'TV rehberi kaynaklarını eklediğin yer. EPG olmadan kanal yanında program bilgisi görünmez.',
+    helpSecurity: 'IP engelleme ve güvenlik logları. Şüpheli girişleri buradan görürsün.',
+    helpImportExport: 'Tüm paneli yedekleyip başka yere taşımak için.',
   },
 
   de: {

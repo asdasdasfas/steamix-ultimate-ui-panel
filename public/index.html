@@ -120,6 +120,7 @@
         <div class="col-md-6" id="user-section">
           <div class="card h-100">
             <div class="card-header" data-i18n="userManagement">User Management</div>
+            <div class="alert alert-info py-2 px-3 small mb-2" data-i18n="helpUserManagement">Müşterilerini oluşturur, her birine süre ve cihaz sınırı verirsin.</div>
             <div class="card-body">
                <form id="user-form" class="row g-2 mb-3 align-items-start">
                   <div class="col-12 col-md-4 col-lg-3"><input class="form-control form-control-sm" name="username" autocomplete="off" data-i18n-placeholder="username" data-i18n-label="username" placeholder="Username" required /></div>
@@ -160,6 +161,7 @@
         <div class="col-md-6 d-none" id="provider-section">
           <div class="card h-100">
              <div class="card-header" data-i18n="providerManagement">Providers</div>
+             <div class="alert alert-info py-2 px-3 small mb-2" data-i18n="helpProviderManagement">CTN34 gibi kaynak linklerini eklediğin yer.</div>
              <div class="card-body">
                 <div id="provider-list-container">
                    <p class="text-muted small" data-i18n="selectUserHint">Providers for selected user:</p>
@@ -230,6 +232,8 @@
                  <div class="tab-content" id="user-tab-content">
                     <!-- Channels Tab -->
                     <div class="tab-pane fade show active" id="tab-channels" role="tabpanel" aria-labelledby="tab-channels-btn">
+                       <div class="alert alert-info py-2 small" data-i18n="helpCategories">Kendi paketlerini oluşturduğun yer.</div>
+                       <div class="alert alert-info py-2 small" data-i18n="helpChannels">Sağdan soldan kanal seçip paketine eklersin.</div>
                        <div class="row">
                           <div class="col-md-5">
                              <h6 data-i18n="categories">Categories</h6>
