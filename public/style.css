@@ -11,11 +11,11 @@ select option[data-icon] {
 }
 
 :root {
-  --tv-dark: #0a0e27;
-  --tv-darker: #050812;
-  --tv-blue: #1e3a8a;
-  --tv-blue-light: #60a5fa;
-  --tv-cyan: #22d3ee;
+  --tv-dark: #0a0814;
+  --tv-darker: #04060d;
+  --tv-blue: #0099ff;
+  --tv-blue-light: #0099ff;
+  --tv-cyan: #7dd3ff;
   --tv-purple: #a78bfa;
   --tv-green: #34d399;
   --tv-red: #f87171;
@@ -25,14 +25,15 @@ select option[data-icon] {
   --tv-text-primary: #f9fafb;
   --tv-text-secondary: #e5e7eb;
   --tv-text-muted: #d1d5db;
-  --tv-border: #1f2937;
-  --tv-glow: rgba(96, 165, 250, 0.3);
+  --tv-border: rgba(255,255,255,0.08);
+  --tv-glow: rgba(0,153,255,0.35);
 }
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&display=swap');
 
 body {
-  background: linear-gradient(135deg, var(--tv-darker) 0%, var(--tv-dark) 100%);
+  background: radial-gradient(1200px 600px at 20% -10%, rgba(0,153,255,0.18), transparent), linear-gradient(135deg, var(--tv-darker) 0%, var(--tv-dark) 100%);
   color: var(--tv-text-primary);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Inter','Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   min-height: 100vh;
 }
 
