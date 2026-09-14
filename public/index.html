@@ -1502,7 +1502,10 @@
     </div>
   </div>
 
-      <!-- EPG Channel Select Modal -->
+      </div><!-- flex-grow-1 -->
+  </div><!-- app-shell -->
+
+  <!-- EPG Channel Select Modal -->
   <div class="modal fade" id="epg-select-modal" tabindex="-1" aria-hidden="true" aria-labelledby="epg-select-modalLabel">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -1531,6 +1534,28 @@
     </div>
   </div>
 
+  <script>
+    // Sidebar sync + show when logged in
+    setInterval(()=>{
+      const nb=document.getElementById('main-navbar');
+      const sb=document.getElementById('sidebar');
+      if(nb && sb){
+        if(!nb.classList.contains('d-none')) sb.classList.remove('d-none'); sb.classList.add('d-flex');
+        // sync language selectors
+        const a=document.getElementById('language-selector'), b=document.getElementById('language-selector-side');
+        if(a&&b&&a.value!==b.value) b.value=a.value;
+      }
+      // view transition trigger
+      document.querySelectorAll('[data-view]').forEach(el=>el.addEventListener('click',()=>{const m=document.getElementById('main-content'); if(m){m.style.animation='none'; m.offsetHeight; m.style.animation='';}}));
+    },600);
+    // sidebar nav active sync
+    document.addEventListener('click',e=>{
+      const t=e.target.closest('[data-view]'); if(!t) return;
+      document.querySelectorAll('#sidebar .nav-link').forEach(a=>a.classList.remove('active'));
+      const s=document.getElementById(t.id+'-side')||document.querySelector(`#sidebar [data-view="${t.getAttribute('data-view')}"]`);
+      if(s) s.classList.add('active');
+    });
+  </script>
   <script src="vendor/bootstrap.bundle.min.js"></script>
   <script src="vendor/sortable.min.js"></script>
   <script src="i18n.js"></script>
