@@ -17,7 +17,38 @@
 <body>
   <a class="visually-hidden-focusable p-2 bg-white text-dark position-absolute start-0 top-0 z-3" href="#main-content" data-i18n="skipToContent">Skip to content</a>
 
-  <!-- Navbar -->
+  <!-- Splash 8sn -->
+  <div id="splash" style="position:fixed;inset:0;z-index:9999;background:radial-gradient(800px 400px at 50% 0%,rgba(0,153,255,0.18),transparent),linear-gradient(135deg,#04060d 0%,#0a0814 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;transition:opacity 0.9s ease">
+    <img src="logo.png" style="width:92px;height:92px;border-radius:18px;box-shadow:0 0 40px rgba(0,153,255,0.6);animation: splashPulse 1.6s ease-in-out infinite">
+    <h1 style="font-family:Orbitron,sans-serif;font-weight:800;letter-spacing:0.12em;margin:18px 0 6px;color:#fff">Steamix <span style="color:#0099ff">TV</span> <span style="font-size:12px;opacity:0.7">ULTIMATE</span></h1>
+    <p style="color:#7dd3ff;letter-spacing:0.14em;font-size:11px;text-transform:uppercase">Hoş Geldiniz</p>
+    <p style="color:#9ca3af;font-size:12px;max-width:420px;margin-top:10px;line-height:1.6">Profesyonel IPTV Yönetim Paneli<br><span style="color:#fbbf24">Sadece yöneticiler giriş yapabilir</span></p>
+    <div style="margin-top:18px;width:180px;height:3px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden"><div style="height:100%;width:0%;background:linear-gradient(90deg,#0099ff,#a78bfa);animation: splashBar 8s linear forwards"></div></div>
+    <style>@keyframes splashPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes splashBar{0%{width:0%}100%{width:100%}}</style>
+  </div>
+  <script>setTimeout(()=>{const s=document.getElementById('splash'); if(s){s.style.opacity='0'; setTimeout(()=>s.remove(),900)}},8000);</script>
+
+  <!-- Sidebar Layout -->
+  <div class="d-flex" id="app-shell" style="min-height:100vh">
+    <nav id="sidebar" class="d-none flex-column p-3" style="width:250px;background:rgba(10,8,20,0.9);border-right:1px solid rgba(255,255,255,0.06);backdrop-filter:blur(12px);position:sticky;top:0;height:100vh;overflow:auto">
+      <a class="d-flex align-items-center gap-2 mb-4 text-decoration-none" href="#">
+        <img src="logo.png" width="32" height="32" style="border-radius:8px;box-shadow:0 0 14px rgba(0,153,255,0.5)"><span style="font-family:Orbitron,sans-serif;font-weight:800;letter-spacing:0.08em;color:#fff">Steamix <span style="color:#0099ff">TV</span></span>
+      </a>
+      <div class="small text-muted mb-2" style="letter-spacing:0.14em">MENÜ</div>
+      <a class="nav-link active" href="#" data-view="dashboard" id="nav-dashboard-side" style="color:#7dd3ff"><i class="bi bi-speedometer2 me-2"></i>Panel</a>
+      <a class="nav-link" href="#" data-view="epg-mapping" id="nav-epg-mapping-side"><i class="bi bi-map me-2"></i>EPG Eşleme</a>
+      <a class="nav-link" href="#" data-view="statistics" id="nav-statistics-side"><i class="bi bi-graph-up me-2"></i>İstatistik</a>
+      <a class="nav-link" href="#" data-view="security" id="nav-security-side"><i class="bi bi-shield-lock me-2"></i>Güvenlik</a>
+      <a class="nav-link" href="#" data-view="import-export" id="nav-import-export-side"><i class="bi bi-arrow-left-right me-2"></i>İçe/Dışa Aktar</a>
+      <a class="nav-link" href="#" data-view="ai" id="nav-ai-side"><i class="bi bi-robot me-2"></i>AI Asistan</a>
+      <div class="mt-auto pt-3 border-top" style="border-color:rgba(255,255,255,0.06) !important">
+        <select id="language-selector-side" class="form-select form-select-sm bg-dark text-light border-secondary mb-2"><option value="tr">🇹🇷 Türkçe</option><option value="en">🇬🇧 English</option></select>
+        <button class="btn btn-outline-info btn-sm w-100 mb-1" data-action="action-show-change-password">Şifre Değiştir</button>
+        <button class="btn btn-outline-secondary btn-sm w-100" data-action="action-logout">Çıkış</button>
+      </div>
+    </nav>
+    <div class="flex-grow-1" style="min-width:0">
+  <!-- Top Navbar (hidden when sidebar active, kept for mobile) -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 d-none" id="main-navbar">
     <div class="container-fluid">
       <a class="navbar-brand d-flex align-items-center gap-2" href="#">
@@ -64,7 +95,7 @@
     </div>
   </nav>
 
-  <div class="container-fluid py-4 d-none" id="main-content" tabindex="-1">
+  <div class="container-fluid py-4 d-none view-transition" id="main-content" tabindex="-1">
 
     <section id="view-ai" class="d-none" aria-labelledby="nav-ai"></section>
 
