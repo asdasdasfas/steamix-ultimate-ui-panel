@@ -23,10 +23,17 @@
     <h1 style="font-family:Orbitron,sans-serif;font-weight:800;letter-spacing:0.12em;margin:18px 0 6px;color:#fff">Steamix <span style="color:#0099ff">TV</span> <span style="font-size:12px;opacity:0.7">ULTIMATE</span></h1>
     <p style="color:#7dd3ff;letter-spacing:0.14em;font-size:11px;text-transform:uppercase">Hoş Geldiniz</p>
     <p style="color:#9ca3af;font-size:12px;max-width:420px;margin-top:10px;line-height:1.6">Profesyonel IPTV Yönetim Paneli<br><span style="color:#fbbf24">Sadece yöneticiler giriş yapabilir</span></p>
-    <div style="margin-top:18px;width:180px;height:3px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden"><div style="height:100%;width:0%;background:linear-gradient(90deg,#0099ff,#a78bfa);animation: splashBar 8s linear forwards"></div></div>
-    <style>@keyframes splashPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes splashBar{0%{width:0%}100%{width:100%}}</style>
+    <div style="margin-top:18px;width:180px;height:3px;background:rgba(255,255,255,0.08);border-radius:99px;overflow:hidden"><div id="splash-bar" style="height:100%;width:100%;background:linear-gradient(90deg,#0099ff,#a78bfa);transform:scaleX(0);transform-origin:left;animation: splashBar 8s linear forwards"></div></div>
+    <div style="margin-top:10px;font-size:10px;color:#6b7280;letter-spacing:0.12em">Yükleniyor... (tıkla geç)</div>
+    <style>@keyframes splashPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}@keyframes splashBar{0%{transform:scaleX(0)}100%{transform:scaleX(1)}}</style>
   </div>
-  <script>setTimeout(()=>{const s=document.getElementById('splash'); if(s){s.style.opacity='0'; setTimeout(()=>s.remove(),900)}},8000);</script>
+  <script>
+    (function(){
+      const s=document.getElementById('splash');
+      if(s) s.addEventListener('click',()=>{s.style.opacity='0'; setTimeout(()=>s.remove(),400)});
+      setTimeout(()=>{const el=document.getElementById('splash'); if(el){el.style.opacity='0'; setTimeout(()=>el.remove(),900)}},8000);
+    })();
+  </script>
 
   <!-- Sidebar Layout -->
   <div class="d-flex" id="app-shell" style="min-height:100vh">
