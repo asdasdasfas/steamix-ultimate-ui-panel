@@ -82,5 +82,39 @@
         if (o) side.value = main.value;
       });
     }
+    // Remember-me: prefill saved credentials, persist on submit.
+    try {
+      var lu = document.getElementById('login-username');
+      var lp = document.getElementById('login-password');
+      var rm = document.getElementById('remember-me');
+      if (lu && window.localStorage.getItem('xtreme_remember') === '1') {
+        var su = window.localStorage.getItem('xtreme_user');
+        var sp = window.localStorage.getItem('xtreme_pass');
+        if (su && !lu.value) lu.value = su;
+        if (sp && lp && !lp.value) lp.value = sp;
+      }
+      var lf = document.getElementById('login-form');
+      if (lf) lf.addEventListener('submit', function () {
+        try {
+          if (rm && rm.checked) {
+            window.localStorage.setItem('xtreme_remember', '1');
+            if (lu) window.localStorage.setItem('xtreme_user', lu.value);
+            if (lp) window.localStorage.setItem('xtreme_pass', lp.value);
+          } else {
+            window.localStorage.removeItem('xtreme_remember');
+            window.localStorage.removeItem('xtreme_pass');
+          }
+        } catch (e) { /* storage unavailable */ }
+      });
+    } catch (e) { /* storage unavailable */ }
+    // Forgot-password link opens the info modal.
+    var fl = document.getElementById('forgot-password-link');
+    if (fl) fl.addEventListener('click', function (e) {
+      e.preventDefault();
+      var m = document.getElementById('forgot-password-modal');
+      if (m && window.bootstrap && window.bootstrap.Modal) {
+        window.bootstrap.Modal.getOrCreateInstance(m).show();
+      }
+    });
   });
 })();

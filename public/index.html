@@ -36,25 +36,25 @@
     <div class="login-left">
       <div class="login-card">
         <div class="text-center mb-4">
-          <svg width="56" height="56" viewBox="0 0 280 80" style="filter:drop-shadow(0 0 20px rgba(255,68,68,0.4));margin-bottom:12px">
+          <svg width="120" height="34" viewBox="0 0 280 80" style="filter:drop-shadow(0 0 20px rgba(255,68,68,0.4));margin-bottom:12px">
             <defs><linearGradient id="loginXc" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#ff4444"/><stop offset="50%" style="stop-color:#ff6b35"/><stop offset="100%" style="stop-color:#ff4444"/></linearGradient></defs>
             <text x="30" y="50" text-anchor="middle" font-family="Arial Black" font-size="34" font-weight="900" fill="url(#loginXc)">XC</text>
             <text x="66" y="30" font-family="Arial Black" font-size="24" font-weight="900" fill="#fff" letter-spacing="2">Xtream</text>
             <text x="66" y="54" font-family="Arial Black" font-size="17" font-weight="700" fill="url(#loginXc)" letter-spacing="3">CODES</text>
           </svg>
-          <h3 class="fw-bold" style="color:#fff;font-size:22px">Hoş Geldin</h3>
-          <p class="text-muted mt-2" style="font-size:13px">Yönetim paneline giriş yapın</p>
+          <h3 class="fw-bold" style="color:#fff;font-size:22px" data-i18n="welcome_title">Hoş Geldin</h3>
+          <p class="text-muted mt-2" style="font-size:13px" data-i18n="welcome_subtitle">Yönetim paneline giriş yapın</p>
         </div>
         <form id="login-form">
           <div class="mb-3">
-            <label class="form-label fw-semibold small" style="color:#d1d5db">Kullanıcı Adı</label>
+            <label class="form-label fw-semibold small" style="color:#d1d5db" data-i18n="username">Kullanıcı Adı</label>
             <div class="input-group">
               <span class="input-group-text bg-dark border-secondary" style="color:#ff6b35"><i class="bi bi-person"></i></span>
               <input type="text" class="form-control bg-dark text-light border-secondary" name="username" id="login-username" placeholder="admin" required autocomplete="username">
             </div>
           </div>
           <div class="mb-3">
-            <label class="form-label fw-semibold small" style="color:#d1d5db">Şifre</label>
+            <label class="form-label fw-semibold small" style="color:#d1d5db" data-i18n="password">Şifre</label>
             <div class="input-group">
               <span class="input-group-text bg-dark border-secondary" style="color:#ff6b35"><i class="bi bi-lock"></i></span>
               <input type="password" class="form-control bg-dark text-light border-secondary" name="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
@@ -62,7 +62,7 @@
             </div>
           </div>
           <div class="mb-3 d-none" id="login-otp-group">
-            <label class="form-label fw-semibold small" style="color:#d1d5db">Doğrulama Kodu</label>
+            <label class="form-label fw-semibold small" style="color:#d1d5db" data-i18n="otp_label">Doğrulama Kodu</label>
             <div class="input-group">
               <span class="input-group-text bg-dark border-secondary" style="color:#ff6b35"><i class="bi bi-shield-lock"></i></span>
               <input type="text" class="form-control bg-dark text-light border-secondary" id="login-otp" placeholder="••••••" autocomplete="one-time-code" inputmode="numeric">
@@ -71,13 +71,13 @@
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" id="remember-me" checked>
-              <label class="form-check-label small" for="remember-me" style="color:#9ca3af">Beni hatırla</label>
+              <label class="form-check-label small" for="remember-me" style="color:#9ca3af" data-i18n="remember_me">Beni hatırla</label>
             </div>
-            <a href="#" class="small text-decoration-none" style="color:#ff6b35">Şifre unuttunuz?</a>
+            <a href="#" id="forgot-password-link" class="small text-decoration-none" style="color:#ff6b35" data-i18n="forgot_password">Şifre unuttunuz?</a>
           </div>
           <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" id="login-btn">
-            <span class="login-btn-text">Giriş Yap</span>
-            <span class="d-none login-spinner"><span class="spinner-border spinner-border-sm me-1" role="status"></span> Giriliyor...</span>
+            <span class="login-btn-text" data-i18n="login">Giriş Yap</span>
+            <span class="d-none login-spinner"><span class="spinner-border spinner-border-sm me-1" role="status"></span> <span data-i18n="logging_in">Giriliyor...</span></span>
           </button>
         </form>
         <div id="login-error" class="d-none alert alert-danger py-2 mt-3 small"></div>
@@ -91,12 +91,11 @@
         <div class="hero-particle" id="hero-particles"></div>
         <div class="hero-content">
           <h1 class="display-1 fw-black mb-3" style="background:linear-gradient(135deg,#ff4444,#ff6b35,#ff4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:'Inter',sans-serif">Xtream Codes</h1>
-          <h2 class="h3 fw-light mb-4" style="color:rgba(255,255,255,0.7);font-family:'Inter',sans-serif">IPTV Yönetim Altyapısı</h2>
-          <p class="lead mb-4" style="color:rgba(255,255,255,0.5);max-width:420px">Binlerce kanalı tek panelde yönetin. Kullanıcı oluşturun, akış kontrol edin, istatistikleri takip edin.</p>
-          <div class="hero-stats d-flex gap-4 mt-5">
-            <div><span class="hero-stat-number" style="color:#ff4444">1.346</span><br><small style="color:#6b7280">Kanallar</small></div>
-            <div><span class="hero-stat-number" style="color:#ff6b35">∞</span><br><small style="color:#6b7280">Olasılık</small></div>
-            <div><span class="hero-stat-number" style="color:#00d4ff">99.9</span><br><small style="color:#6b7280">Uptime %</small></div>
+          <h2 class="h3 fw-light mb-4" style="color:rgba(255,255,255,0.7);font-family:'Inter',sans-serif" data-i18n="hero_slogan">Tüm yayın ağını tek panelden yönet</h2>
+          <p class="lead mb-4" style="color:rgba(255,255,255,0.5);max-width:420px" data-i18n="hero_sub">Binlerce kanalı tek panelden yönetin. Kullanıcı oluşturun, akış kontrol edin, istatistikleri takip edin.</p>
+          <div class="hero-status">
+            <div class="hero-status-row"><span class="hero-pulse-dot"></span><span data-i18n="status_online">Sistem Çevrimiçi</span></div>
+            <div class="hero-eq" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
           </div>
         </div>
       </div>
@@ -111,17 +110,17 @@
     <a class="d-flex align-items-center gap-2 mb-4 text-decoration-none" href="#">
       <svg width="32" height="32" viewBox="0 0 280 80"><defs><linearGradient id="sidebarXc" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#ff4444"/><stop offset="50%" style="stop-color:#ff6b35"/><stop offset="100%" style="stop-color:#ff4444"/></linearGradient></defs><text x="30" y="50" text-anchor="middle" font-family="Arial Black" font-size="32" font-weight="900" fill="url(#sidebarXc)">XC</text><text x="64" y="30" font-family="Arial Black" font-size="22" font-weight="900" fill="#fff" letter-spacing="2">Xtream</text><text x="64" y="52" font-family="Arial Black" font-size="15" font-weight="700" fill="url(#sidebarXc)" letter-spacing="2">CODES</text></svg>
     </a>
-    <div class="small text-muted mb-2" style="letter-spacing:0.14em;color:#ff6b35">MENÜ</div>
-    <a class="nav-link active" href="#" data-view="dashboard" id="nav-dashboard-side" style="color:#ff6b35"><i class="bi bi-speedometer2 me-2"></i>Panel</a>
-    <a class="nav-link" href="#" data-view="epg-mapping" id="nav-epg-mapping-side" style="color:#9ca3af"><i class="bi bi-map me-2"></i>EPG Eşleme</a>
-    <a class="nav-link" href="#" data-view="statistics" id="nav-statistics-side" style="color:#9ca3af"><i class="bi bi-graph-up me-2"></i>İstatistik</a>
-    <a class="nav-link" href="#" data-view="security" id="nav-security-side" style="color:#9ca3af"><i class="bi bi-shield-lock me-2"></i>Güvenlik</a>
-    <a class="nav-link" href="#" data-view="import-export" id="nav-import-export-side" style="color:#9ca3af"><i class="bi bi-arrow-left-right me-2"></i>İçe/Dışa Aktar</a>
-    <a class="nav-link" href="#" data-view="ai" id="nav-ai-side" style="color:#9ca3af"><i class="bi bi-robot me-2"></i>AI Asistan</a>
+    <div class="small text-muted mb-2" style="letter-spacing:0.14em;color:#ff6b35" data-i18n="menu">MENÜ</div>
+    <a class="nav-link active" href="#" data-view="dashboard" id="nav-dashboard-side" style="color:#ff6b35"><i class="bi bi-speedometer2 me-2"></i><span data-i18n="dashboard">Panel</span></a>
+    <a class="nav-link" href="#" data-view="epg-mapping" id="nav-epg-mapping-side" style="color:#9ca3af"><i class="bi bi-map me-2"></i><span data-i18n="epgMapping">EPG Eşleme</span></a>
+    <a class="nav-link" href="#" data-view="statistics" id="nav-statistics-side" style="color:#9ca3af"><i class="bi bi-graph-up me-2"></i><span data-i18n="statistics">İstatistik</span></a>
+    <a class="nav-link" href="#" data-view="security" id="nav-security-side" style="color:#9ca3af"><i class="bi bi-shield-lock me-2"></i><span data-i18n="security">Güvenlik</span></a>
+    <a class="nav-link" href="#" data-view="import-export" id="nav-import-export-side" style="color:#9ca3af"><i class="bi bi-arrow-left-right me-2"></i><span data-i18n="importExport">İçe/Dışa Aktar</span></a>
+    <a class="nav-link" href="#" data-view="ai" id="nav-ai-side" style="color:#9ca3af"><i class="bi bi-robot me-2"></i><span data-i18n="ai_title">AI Asistan</span></a>
     <div class="mt-auto pt-3 border-top" style="border-color:rgba(255,68,68,0.1)">
       <select id="language-selector-side" class="form-select form-select-sm bg-dark text-light border-secondary mb-2"><option value="tr">🇹🇷 Türkçe</option><option value="en">🇬🇧 English</option></select>
-      <button class="btn btn-outline-danger btn-sm w-100 mb-1" data-action="action-show-change-password"><i class="bi bi-key me-1"></i>Şifre Değiştir</button>
-      <button class="btn btn-outline-secondary btn-sm w-100" data-action="action-logout"><i class="bi bi-box-arrow-right me-1"></i>Çıkış</button>
+      <button class="btn btn-outline-danger btn-sm w-100 mb-1" data-action="action-show-change-password"><i class="bi bi-key me-1"></i><span data-i18n="change_password">Şifre Değiştir</span></button>
+      <button class="btn btn-outline-secondary btn-sm w-100" data-action="action-logout"><i class="bi bi-box-arrow-right me-1"></i><span data-i18n="logout">Çıkış</span></button>
     </div>
   </nav>
 
@@ -225,9 +224,9 @@
                         <option value="" data-i18n="copyFromUser">Copy from...</option>
                      </select>
                   </div>
-                  <div class="col-6 col-md-12 col-lg-2 d-flex gap-1 align-items-center">
+                  <div class="col-12 col-md-12 col-lg-auto d-flex gap-1 align-items-center">
                      <button class="btn btn-sm btn-primary flex-grow-1 py-1 text-nowrap" type="submit" data-i18n="addUser">Add</button>
-                     <button class="btn btn-sm btn-outline-secondary py-1" type="button" data-action="action-generate-user" data-i18n-title="generateRandomUser" data-i18n-label="generateRandomUser"><i class="bi bi-lightning-fill" aria-hidden="true"></i></button>
+                     <button class="btn btn-sm btn-outline-secondary py-1 flex-shrink-0" type="button" data-action="action-generate-user" data-i18n-title="generateRandomUser" data-i18n-label="generateRandomUser"><i class="bi bi-lightning-fill" aria-hidden="true"></i></button>
                   </div>
                   <div class="col-12 mt-2">
                      <a class="text-decoration-none small text-muted" data-bs-toggle="collapse" href="#advanced-user-settings" role="button" aria-expanded="false" aria-controls="advanced-user-settings">
@@ -941,6 +940,24 @@
 <div id="forcePwdToast" class="d-none" style="position:fixed;bottom:24px;right:24px;z-index:9999;background:rgba(255,68,68,0.15);border:1px solid rgba(255,68,68,0.4);backdrop-filter:blur(12px);border-radius:12px;padding:16px 24px;max-width:360px">
   <div class="d-flex align-items-center gap-2 mb-2"><i class="bi bi-exclamation-triangle-fill" style="color:#ff4444;font-size:20px"></i><strong style="color:#ff6b35">Şifre Değiştirilmesi Gerekiyor</strong></div>
   <p class="small text-muted mb-0" style="color:#d1d5db">İlk giriş yaptınız. Lütfen profilden şifrenizi güncelleyin.</p>
+</div>
+
+<!-- Forgot Password Modal -->
+<div class="modal fade" id="forgot-password-modal" tabindex="-1" aria-labelledby="forgot-password-modalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-color:rgba(255,68,68,0.3)">
+      <div class="modal-header" style="border-color:rgba(255,68,68,0.1)">
+        <h5 id="forgot-password-modalLabel" class="modal-title" data-i18n="forgot_title">Şifre Sıfırlama</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small mb-0" style="color:#d1d5db" data-i18n="forgot_body">Güvenlik nedeniyle otomatik sıfırlama yoktur. Varsayılan yönetici şifresini geri yüklemek için paneli yeniden dağıtın veya sunucuyu yöneten kişiye danışın. Giriş yaptıktan sonra şifrenizi dilediğiniz zaman değiştirebilirsiniz.</p>
+      </div>
+      <div class="modal-footer" style="border-color:rgba(255,68,68,0.1)">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-i18n="close">Kapat</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="modal fade" id="importCategoryModal" tabindex="-1" aria-hidden="true" aria-labelledby="importCategoryModal-title">
