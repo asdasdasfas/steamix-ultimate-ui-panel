@@ -1060,8 +1060,17 @@ document.getElementById('edit-user-form').addEventListener('submit', async e => 
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body)
     });
-    bootstrap.Modal.getInstance(document.getElementById('edit-user-modal')).hide();
-    loadUsers();
+    // Keep the modal open on purpose: refresh lists + open details behind it
+    document.getElementById('edit-user-password').value = '';
+    await loadUsers();
+    // Refresh the open details pane too (modal stays open on purpose)
+    if (Number(id) === Number(selectedUserId)) {
+      try {
+        const fresh = await fetchJSON('/api/users');
+        const me = (Array.isArray(fresh) ? fresh : []).find(x => Number(x.id) === Number(id));
+        if (me) renderUserDetails(me);
+      } catch {}
+    }
     showToast(t('userUpdated'), 'success');
   } catch (e) {
     alert(t('errorPrefix') + ' ' + (e.message || 'Error'));
