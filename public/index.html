@@ -292,6 +292,21 @@
 <script>
 // Splash auto-hide
 setTimeout(function(){ var s=document.getElementById('splash'); if(s){s.style.opacity='0';setTimeout(function(){if(s)s.remove()},800);} }, 2500);
+
+// Password change modal triggers
+document.addEventListener('DOMContentLoaded', function() {
+  var pwdBtn = document.getElementById('change-password-btn-sidebar') || document.getElementById('change-password-btn-navbar');
+  if (pwdBtn) pwdBtn.addEventListener('click', function() {
+    var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('passwordChangeModal'));
+    modal.show();
+  });
+  // Make Save Changes button submit the form
+  var chBtn = document.getElementById('change-password-btn');
+  if (chBtn) chBtn.addEventListener('click', function() {
+    var form = document.getElementById('change-password-form');
+    if (form) form.requestSubmit();
+  });
+});
 </script>
 <script src="vendor/bootstrap.bundle.min.js"></script>
 <script src="i18n.js"></script>
