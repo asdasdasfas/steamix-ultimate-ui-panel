@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../utils/crypto.js';
 import db from '../database/db.js';
 import { isIpAllowedForUser } from '../services/geoIpService.js';
+import { expiryEpoch } from '../utils/stalker.js';
 
 export function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -28,6 +29,14 @@ export function authenticateToken(req, res, next) {
 
       if (!dbUser || !dbUser.is_active) {
         return res.status(401).json({ error: 'User is inactive or deleted' });
+      }
+
+      // Subscription expiry locks API/WebUI access for normal users
+      if (!user.is_admin && dbUser.expiry_date) {
+        const userExpiry = expiryEpoch(dbUser.expiry_date);
+        if (userExpiry && userExpiry <= Math.floor(Date.now() / 1000)) {
+          return res.status(401).json({ error: 'User account expired' });
+        }
       }
 
       // Token version check

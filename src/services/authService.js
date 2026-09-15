@@ -56,17 +56,35 @@ setInterval(() => {
   }
 }, AUTH_CACHE_CLEANUP_INTERVAL).unref();
 
+// Cached credentials skip bcrypt, but subscription expiry is always re-read
+// live (cheap indexed lookup) so trials cut off exactly on time.
+function isCachedUserExpired(cachedUser) {
+  try {
+    if (cachedUser?.id == null) {
+      const epoch = expiryEpoch(cachedUser?.expiry_date);
+      return !!epoch && epoch <= Math.floor(Date.now() / 1000);
+    }
+    const row = db.prepare('SELECT expiry_date FROM users WHERE id = ?').get(cachedUser.id);
+    if (!row) return true;
+    const epoch = expiryEpoch(row.expiry_date);
+    return !!epoch && epoch <= Math.floor(Date.now() / 1000);
+  } catch {
+    return true;
+  }
+}
+
 export async function authUser(username, password) {
   try {
     const u = (username || '').trim();
     const p = (password || '').trim();
     if (!u || !p) return null;
 
-    // 1. Check Cache
+    // 1. Check Cache (bcrypt is skipped, but expiry is always re-read live
+    // so trials cut off exactly on time)
     const cacheKey = crypto.createHash('sha256').update(`${u}:${p}`).digest('hex');
     if (authCache.has(cacheKey)) {
       const cached = authCache.get(cacheKey);
-      if (Date.now() < cached.expiry) {
+      if (Date.now() < cached.expiry && !isCachedUserExpired(cached.user)) {
         return cached.user;
       }
       authCache.delete(cacheKey);
@@ -93,6 +111,12 @@ export async function authUser(username, password) {
     }
 
     if (isValid) {
+      // Subscription expiry blocks stream access even with correct credentials
+      const userExpiry = expiryEpoch(user?.expiry_date);
+      if (userExpiry && userExpiry <= Math.floor(Date.now() / 1000)) {
+        await preventTimingAttack(p);
+        return null;
+      }
       const safeUser = { ...user };
       delete safeUser.password;
       delete safeUser.otp_secret;
@@ -254,6 +278,11 @@ export async function getXtreamUser(req) {
           const share = db.prepare('SELECT * FROM shared_links WHERE token = ?').get(token);
           if (share) {
               user = db.prepare('SELECT * FROM users WHERE id = ? AND is_active = 1').get(share.user_id);
+              if (user) {
+                  // An expired owner account also kills its shared links
+                  const ownerExpiry = expiryEpoch(user.expiry_date);
+                  if (ownerExpiry && ownerExpiry <= now) user = null;
+              }
               if (user) {
                   user.is_share_guest = true;
                   user.share_start = share.start_time;
