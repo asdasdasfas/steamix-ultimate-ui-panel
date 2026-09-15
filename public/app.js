@@ -13,7 +13,10 @@ window.onerror = function(msg, url, line, col, error) {
 };
 
 window.onunhandledrejection = function(event) {
-   logToBackend('error', 'Unhandled Rejection: ' + event.reason, '');
+   const reason = event.reason;
+   const detail = (reason && reason.message) ? (reason.message + ' | ' + String(reason)) : String(reason);
+   const stack = (reason && reason.stack) ? String(reason.stack) : '';
+   logToBackend('error', 'Unhandled Rejection: ' + detail, stack);
 };
 
 async function logToBackend(level, message, stack) {
