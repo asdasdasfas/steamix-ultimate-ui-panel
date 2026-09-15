@@ -213,6 +213,25 @@ function escapeHtml(unsafe) {
         .replace(/'/g, "&#039;");
 }
 
+// Utility: parse expiry values (ISO datetime, YYYY-MM-DD, or epoch seconds/ms) to Date or null
+function parseExpiryDate(value) {
+    if (value === null || value === undefined || value === '') return null;
+    let ts = value;
+    if (typeof ts === 'number' || /^\d+$/.test(String(ts).trim())) {
+        ts = Number(ts);
+        if (ts < 1e12) ts *= 1000;
+    }
+    const d = new Date(ts);
+    return isNaN(d) ? null : d;
+}
+
+// Utility: format Date for datetime-local inputs (local time, YYYY-MM-DDTHH:mm)
+function formatLocalDateTime(d) {
+    const pad = n => String(n).padStart(2, '0');
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+        'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+}
+
 // Utility: Loading State Helper
 function setLoadingState(btn, isLoading, textKey = 'loading', showText = true) {
   if (!btn) return;
@@ -786,10 +805,14 @@ async function loadUsers() {
 
     const span = document.createElement('span');
     let displayExpiry = '';
-    if (u.expiry_date) {
-        const d = new Date(u.expiry_date);
-        displayExpiry = ` - ${t('expires')}: ${d.toLocaleDateString()}`;
-        if (d < new Date()) {
+    const expDate = parseExpiryDate(u.expiry_date);
+    if (expDate) {
+        let expStr = expDate.toLocaleDateString();
+        if (expDate.getHours() !== 0 || expDate.getMinutes() !== 0) {
+            expStr += ' ' + String(expDate.getHours()).padStart(2, '0') + ':' + String(expDate.getMinutes()).padStart(2, '0');
+        }
+        displayExpiry = ` - ${t('expires')}: ${expStr}`;
+        if (expDate < new Date()) {
             displayExpiry = ` - <span class="text-danger">${t('expired')}</span>`;
         }
     }
@@ -964,10 +987,10 @@ function showEditUserModal(user) {
   document.getElementById('edit-user-notes').value = user.notes || '';
   document.getElementById('edit-user-notes-count').textContent = (user.notes ? user.notes.length : 0) + '/50';
 
-  if (user.expiry_date) {
-    // Attempt to format assuming ISO date (e.g. 2024-12-31T00:00:00.000Z) or YYYY-MM-DD
-    const isoDate = new Date(user.expiry_date).toISOString().split('T')[0];
-    document.getElementById('edit-user-expiry-date').value = isoDate;
+  const expEditDate = parseExpiryDate(user.expiry_date);
+  if (expEditDate) {
+    // datetime-local needs local YYYY-MM-DDTHH:mm
+    document.getElementById('edit-user-expiry-date').value = formatLocalDateTime(expEditDate);
   } else {
     document.getElementById('edit-user-expiry-date').value = '';
   }
