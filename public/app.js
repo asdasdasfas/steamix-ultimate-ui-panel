@@ -1019,7 +1019,21 @@ document.getElementById('edit-user-form').addEventListener('submit', async e => 
   const username = document.getElementById('edit-user-username').value;
   const password = document.getElementById('edit-user-password').value;
   const maxConnections = document.getElementById('edit-user-max-connections').value;
-  const expiryDate = document.getElementById('edit-user-expiry-date').value;
+  const expiryRaw = document.getElementById('edit-user-expiry-date').value;
+  // datetime-local has no timezone: pin the browser's local offset (e.g. Turkey +03:00)
+  // so the server enforces the exact picked hour regardless of server timezone.
+  let expiryDate = null;
+  if (expiryRaw) {
+    if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(expiryRaw)) {
+      const ld = new Date(expiryRaw);
+      const offMin = -ld.getTimezoneOffset();
+      const sign = offMin >= 0 ? '+' : '-';
+      const pad2 = n => String(Math.floor(Math.abs(n))).padStart(2, '0');
+      expiryDate = expiryRaw + ':00' + sign + pad2(offMin / 60) + ':' + pad2(offMin % 60);
+    } else {
+      expiryDate = expiryRaw;
+    }
+  }
   const webuiAccess = document.getElementById('edit-user-webui-access').checked;
   const providerAccess = document.getElementById('edit-user-provider-access').checked;
   const hdhrEnabled = document.getElementById('edit-user-hdhr-enabled').checked;
