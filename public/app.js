@@ -387,6 +387,42 @@ function generateUser() {
     }
 }
 
+// One click: random credentials + full arranged list from the template user
+async function cloneTemplateUser() {
+    const tplSel = document.getElementById('copy-user-select');
+    const tplId = tplSel && tplSel.value ? tplSel.value : null;
+    if (!tplId) {
+        showToast(t('select_template_first'), 'warning');
+        return;
+    }
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    const rnd = n => {
+        let s = '';
+        for (let i = 0; i < n; i++) s += chars.charAt(Math.floor(Math.random() * chars.length));
+        return s;
+    };
+    const letters = 'abcdefghijklmnopqrstuvwxyz';
+    const username = letters.charAt(Math.floor(Math.random() * letters.length)) + rnd(9);
+    const password = letters.charAt(Math.floor(Math.random() * letters.length)) + rnd(9);
+    try {
+        const created = await fetchJSON('/api/users', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({username, password, max_connections: 0, copy_from_user_id: tplId})
+        });
+        try { window.localStorage.setItem('xc_template_user', String(tplId)); } catch {}
+        const users = await fetchJSON('/api/users');
+        const me = (Array.isArray(users) ? users : []).find(
+            x => (created && created.id) ? Number(x.id) === Number(created.id) : x.username === username
+        );
+        if (me) renderUserDetails(me);
+        loadUsers();
+        showToast(t('clone_created', {username, password}), 'success');
+    } catch (e) {
+        showToast(t('errorPrefix') + ' ' + (e.message || 'Error'), 'danger');
+    }
+}
+
 function copyToClipboard(text, btnElement) {
     if (!text) return;
 
@@ -962,6 +998,25 @@ function updateCopyUserSelect(users) {
   });
 
   if (currentVal) select.value = currentVal;
+
+  // Remember the chosen template across reloads
+  try {
+    if (!select.value) {
+      const saved = window.localStorage.getItem('xc_template_user');
+      if (saved && users.find(u => String(u.id) === String(saved))) select.value = saved;
+    } else {
+      window.localStorage.setItem('xc_template_user', select.value);
+    }
+    if (!select.dataset.tplMemory) {
+      select.dataset.tplMemory = '1';
+      select.addEventListener('change', () => {
+        try {
+          if (select.value) window.localStorage.setItem('xc_template_user', select.value);
+          else window.localStorage.removeItem('xc_template_user');
+        } catch {}
+      });
+    }
+  } catch {}
 }
 
 function updateProviderUserSelect(users) {
@@ -3514,6 +3569,9 @@ document.addEventListener('DOMContentLoaded', () => {
   if (changePasswordForm) {
       changePasswordForm.addEventListener('submit', handleChangePassword);
   }
+
+  const cloneBtn = document.getElementById('template-clone-btn');
+  if (cloneBtn) cloneBtn.addEventListener('click', cloneTemplateUser);
 
   // Trial presets: one click sets expiry to now + N hours (datetime-local, local time)
   document.querySelectorAll('[data-expiry-preset]').forEach(btn => {

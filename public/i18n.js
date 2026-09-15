@@ -736,7 +736,10 @@ const translations = {
     "preset_12h": "12 Hours",
     "preset_24h": "24 Hours",
     "preset_7d": "7 Days",
-    "apply_custom": "Apply"
+    "apply_custom": "Apply",
+    "clone_template": "Clone arranged list",
+    "select_template_first": "Pick a template user in Copy from first",
+    "clone_created": "User ready — {username} / {password}"
   },
   "tr": {
     "title": "Steamix TV ULTIMATE",
@@ -1471,7 +1474,10 @@ const translations = {
     "preset_12h": "12 Saat",
     "preset_24h": "24 Saat",
     "preset_7d": "7 Gün",
-    "apply_custom": "Uygula"
+    "apply_custom": "Uygula",
+    "clone_template": "Düzenlenmiş Listeyi Aktar",
+    "select_template_first": "Önce Kopyala kutusundan şablon kullanıcıyı seçin",
+    "clone_created": "Kullanıcı hazır — {username} / {password}"
   },
   "de": {
     "casting": "Wiedergabe auf externem Gerät",
@@ -2206,7 +2212,10 @@ const translations = {
     "preset_12h": "12 Stunden",
     "preset_24h": "24 Stunden",
     "preset_7d": "7 Tage",
-    "apply_custom": "Übernehmen"
+    "apply_custom": "Übernehmen",
+    "clone_template": "Fertige Liste übernehmen",
+    "select_template_first": "Wähle zuerst einen Vorlagen-Benutzer unter Kopieren von",
+    "clone_created": "Benutzer bereit — {username} / {password}"
   },
   "fr": {
     "casting": "Diffusion sur un appareil externe",
@@ -2941,7 +2950,10 @@ const translations = {
     "preset_12h": "12 heures",
     "preset_24h": "24 heures",
     "preset_7d": "7 jours",
-    "apply_custom": "Appliquer"
+    "apply_custom": "Appliquer",
+    "clone_template": "Cloner la liste prête",
+    "select_template_first": "Choisissez d’abord un utilisateur modèle dans Copier depuis",
+    "clone_created": "Utilisateur prêt — {username} / {password}"
   },
   "el": {
     "casting": "Μετάδοση σε εξωτερική συσκευή",
@@ -3676,7 +3688,10 @@ const translations = {
     "preset_12h": "12 ώρες",
     "preset_24h": "24 ώρες",
     "preset_7d": "7 ημέρες",
-    "apply_custom": "Εφαρμογή"
+    "apply_custom": "Εφαρμογή",
+    "clone_template": "Κλωνοποίηση έτοιμης λίστας",
+    "select_template_first": "Διάλεξε πρώτα πρότυπο χρήστη από το Αντιγραφή από",
+    "clone_created": "Έτοιμος χρήστης — {username} / {password}"
   }
 };
 
