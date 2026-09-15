@@ -13,7 +13,7 @@
 <body>
 
 <!-- SPLASH -->
-<div id="splash" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0a0a0f 0%,#111118 40%,#1a0a0a 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;transition:opacity 0.8s ease;cursor:pointer;animation:splashHide 0.8s ease 2.5s forwards;overflow:hidden">
+<div id="splash" onclick="this.style.opacity='0';setTimeout(()=>this.remove(),400)" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0a0a0f 0%,#111118 40%,#1a0a0a 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;transition:opacity 0.8s ease;cursor:pointer;animation:splashHide 0.8s ease 2.5s forwards;overflow:hidden">
   <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(800px 400px at 50% 50%,rgba(255,68,68,0.15),transparent 60%),radial-gradient(400px 300px at 20% 80%,rgba(255,107,53,0.1),transparent),radial-gradient(400px 300px at 80% 20%,rgba(255,68,68,0.08),transparent)"></div>
   <div style="position:relative">
     <div style="position:absolute;inset:-20px;background:radial-gradient(circle,rgba(255,68,68,0.3),transparent 70%);filter:blur(20px);animation:splashPulse 1.4s ease-in-out infinite"></div>
@@ -61,6 +61,13 @@
               <button class="btn btn-outline-secondary" type="button" data-toggle-password="login-password"><i class="bi bi-eye"></i></button>
             </div>
           </div>
+          <div class="mb-3 d-none" id="login-otp-group">
+            <label class="form-label fw-semibold small" style="color:#d1d5db">Doğrulama Kodu</label>
+            <div class="input-group">
+              <span class="input-group-text bg-dark border-secondary" style="color:#ff6b35"><i class="bi bi-shield-lock"></i></span>
+              <input type="text" class="form-control bg-dark text-light border-secondary" id="login-otp" placeholder="••••••" autocomplete="one-time-code" inputmode="numeric">
+            </div>
+          </div>
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div class="form-check">
               <input class="form-check-input" type="checkbox" id="remember-me" checked>
@@ -73,7 +80,7 @@
             <span class="d-none login-spinner"><span class="spinner-border spinner-border-sm me-1" role="status"></span> Giriliyor...</span>
           </button>
         </form>
-        <div id="login-error" class="d-none alert alert-danger py-2 mt-3 small" style="display:none"></div>
+        <div id="login-error" class="d-none alert alert-danger py-2 mt-3 small"></div>
         <div class="mt-4 pt-3 border-top" style="border-color:rgba(255,255,255,0.06)">
           <p class="text-muted small text-center mb-0" style="color:#6b7280">Xtream Codes UI Manager © 2026</p>
         </div>
@@ -98,7 +105,7 @@
 </div>
 
 <!-- MAIN APP -->
-<div class="d-flex" id="app-shell" style="min-height:100vh;display:none">
+<div class="d-none" id="app-shell" style="min-height:100vh;display:none">
   <!-- Sidebar -->
   <nav id="sidebar" class="d-flex flex-column p-3" style="width:255px;background:rgba(10,10,15,0.95);border-right:1px solid rgba(255,68,68,0.1);backdrop-filter:blur(12px);position:sticky;top:0;height:100vh;overflow:auto;z-index:10">
     <a class="d-flex align-items-center gap-2 mb-4 text-decoration-none" href="#">
@@ -139,6 +146,7 @@
           <div class="d-flex align-items-center gap-2">
             <select id="language-selector" class="form-select form-select-sm bg-dark text-light border-secondary w-auto"><option value="tr">🇹🇷 Türkçe</option><option value="en">🇬🇧 English</option><option value="de">🇩🇪 Deutsch</option><option value="fr">🇫🇷 Français</option><option value="el">🇬🇷 Ελληνικά</option></select>
             <button class="btn btn-outline-danger btn-sm" data-action="action-show-change-password"><i class="bi bi-key me-1"></i></button>
+            <button class="btn btn-outline-warning btn-sm" data-action="action-show-otp" data-i18n="setup_2fa">2FA</button>
             <button class="btn btn-outline-secondary btn-sm" data-action="action-logout"><i class="bi bi-box-arrow-right"></i></button>
           </div>
         </div>
@@ -147,141 +155,785 @@
 
     <div class="container-fluid py-4 d-none view-transition" id="main-content" tabindex="-1">
 
-      <!-- View: Dashboard -->
-      <div id="view-dashboard">
-        <!-- Stats Cards -->
-        <div class="row mb-4" id="dashboard-stats-bar">
-          <div class="col-md-3"><div class="card mb-3 text-center"><div class="card-body"><h5 class="card-title text-muted" data-i18n="totalUsers">Total Users</h5><p class="card-text display-4 fw-bold" style="color:#ff4444" id="stats-users">0</p></div></div></div>
-          <div class="col-md-3"><div class="card mb-3 text-center"><div class="card-body"><h5 class="card-title text-muted" data-i18n="totalProviders">Total Providers</h5><p class="card-text display-4 fw-bold" style="color:#ff6b35" id="stats-providers">0</p></div></div></div>
-          <div class="col-md-3"><div class="card mb-3 text-center"><div class="card-body"><h5 class="card-title text-muted" data-i18n="activeStreams">Active Streams</h5><p class="card-text display-4 fw-bold" style="color:#00d4ff" id="stats-streams">0</p></div></div></div>
-          <div class="col-md-3"><div class="card mb-3 text-center"><div class="card-body"><h5 class="card-title text-muted" data-i18n="epgSources">EPG Sources</h5><p class="card-text display-4 fw-bold" style="color:#a78bfa" id="stats-epg">0</p></div></div></div>
-        </div>
-        <div class="row mb-4">
-          <div class="col-md-6" id="user-section">
-            <div class="card h-100">
-              <div class="card-header" style="border-color:rgba(255,68,68,0.1)"><i class="bi bi-people me-2" style="color:#ff6b35"></i><span data-i18n="userManagement">User Management</span></div>
-              <div class="alert alert-info py-2 px-3 small mb-2" style="background:rgba(255,68,68,0.05);border-color:rgba(255,68,68,0.1)" data-i18n="helpUserManagement">Müşterilerini oluşturur, her birine süre ve cihaz sınırı verirsin.</div>
-              <div class="card-body">
-                <form id="user-form" class="row g-2 mb-3 align-items-start">
-                  <div class="col-12 col-md-4 col-lg-3"><input class="form-control form-control-sm" name="username" autocomplete="off" placeholder="Username" required /></div>
-                  <div class="col-12 col-md-4 col-lg-4"><div class="input-group input-group-sm"><input class="form-control" name="password" id="new-user-password" type="password" autocomplete="new-password" placeholder="Password" required /><button class="btn btn-outline-secondary" type="button" data-toggle-password="new-user-password"><i class="bi bi-eye"></i></button></div></div>
-                  <div class="col-6 col-md-4 col-lg-3"><select class="form-select form-select-sm" name="copy_from_user_id" id="copy-user-select"><option value="">Copy from...</option></select></div>
-                  <div class="col-6 col-md-12 col-lg-2 d-flex gap-1 align-items-center"><button class="btn btn-sm btn-primary flex-grow-1 py-1 text-nowrap" type="submit" data-i18n="addUser">Add</button></div>
-                </form>
-                <ul id="user-list" class="list-group list-group-flush max-h-400-scroll"></ul>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6 d-none" id="provider-section">
-            <div class="card h-100">
-              <div class="card-header" style="border-color:rgba(255,68,68,0.1)"><i class="bi bi-cable me-2" style="color:#ff6b35"></i><span data-i18n="providerManagement">Providers</span></div>
-              <div class="alert alert-info py-2 px-3 small mb-2" style="background:rgba(255,68,68,0.05);border-color:rgba(255,68,68,0.1)" data-i18n="helpProviderManagement">CTN34 gibi kaynak linklerini eklediğin yer.</div>
-              <div class="card-body"><div id="provider-list-container"><p class="text-muted small" data-i18n="selectUserHint">Providers for selected user:</p><ul id="provider-list" class="list-group list-group-flush mb-3"></ul><button id="add-provider-btn" class="btn btn-sm btn-outline-primary w-100" data-action="action-add-provider" data-i18n="addProvider">Add Provider</button></div></div>
+    <section id="view-ai" class="d-none" aria-labelledby="nav-ai"></section>
+
+    <!-- View: Dashboard -->
+    <div id="view-dashboard">
+      <!-- Editing Banner -->
+      <div id="editing-share-banner" class="alert alert-warning d-flex justify-content-between align-items-center mb-3 d-none">
+         <div>
+            <strong data-i18n="editingShare">Editing Share:</strong> <span id="editing-share-name-display"></span>.
+            <span data-i18n="editShareInstructions">Modify channel selection and click 'Update Share'.</span>
+         </div>
+         <button class="btn btn-sm btn-outline-dark" id="banner-cancel-edit-btn" data-i18n="cancel">Cancel</button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="row mb-4" id="dashboard-stats-bar">
+        <div class="col-md-3">
+          <div class="card mb-3 text-center">
+            <div class="card-body">
+              <h5 class="card-title text-muted" data-i18n="totalUsers">Total Users</h5>
+              <p class="card-text display-4 fw-bold text-primary" id="stats-users">0</p>
             </div>
           </div>
         </div>
-        <div class="row">
-          <div class="col-12">
-            <div class="card mb-4">
-              <div class="card-header d-flex justify-content-between align-items-center" style="border-color:rgba(255,68,68,0.1)">
-                <div><span data-i18n="selectedUser">Selected User</span>: <span id="selected-user-label" class="fw-bold" style="color:#ff6b35">-</span></div>
-                <div><button id="header-play-btn" class="btn btn-sm btn-success" data-i18n="openWebPlayer">Open Web Player</button></div>
+        <div class="col-md-3">
+          <div class="card mb-3 text-center">
+            <div class="card-body">
+              <h5 class="card-title text-muted" data-i18n="totalProviders">Total Providers</h5>
+              <p class="card-text display-4 fw-bold text-success" id="stats-providers">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card mb-3 text-center">
+            <div class="card-body">
+              <h5 class="card-title text-muted" data-i18n="activeStreams">Active Streams</h5>
+              <p class="card-text display-4 fw-bold text-danger" id="stats-streams">0</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card mb-3 text-center">
+            <div class="card-body">
+              <h5 class="card-title text-muted" data-i18n="epgSources">EPG Sources</h5>
+              <p class="card-text display-4 fw-bold text-info" id="stats-epg">0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <!-- User List & Selection -->
+        <div class="col-md-6" id="user-section">
+          <div class="card h-100">
+            <div class="card-header" data-i18n="userManagement">User Management</div>
+            <div class="alert alert-info py-2 px-3 small mb-2" data-i18n="helpUserManagement">Müşterilerini oluşturur, her birine süre ve cihaz sınırı verirsin.</div>
+            <div class="card-body">
+               <form id="user-form" class="row g-2 mb-3 align-items-start">
+                  <div class="col-12 col-md-4 col-lg-3"><input class="form-control form-control-sm" name="username" autocomplete="off" data-i18n-placeholder="username" data-i18n-label="username" placeholder="Username" required /></div>
+                  <div class="col-12 col-md-4 col-lg-4">
+                     <div class="input-group input-group-sm">
+                        <input class="form-control" name="password" id="new-user-password" type="password" autocomplete="new-password" data-i18n-placeholder="password" data-i18n-label="password" placeholder="Password" required />
+                        <button class="btn btn-outline-secondary" type="button" data-toggle-password="new-user-password" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+                        <button class="btn btn-outline-secondary" type="button" data-copy-target="new-user-password" data-i18n-label="copyToClipboardAction" data-i18n-title="copyToClipboardAction"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                     </div>
+                  </div>
+                  <div class="col-6 col-md-4 col-lg-3">
+                     <select class="form-select form-select-sm" name="copy_from_user_id" id="copy-user-select" data-i18n-label="copyFromUser">
+                        <option value="" data-i18n="copyFromUser">Copy from...</option>
+                     </select>
+                  </div>
+                  <div class="col-6 col-md-12 col-lg-2 d-flex gap-1 align-items-center">
+                     <button class="btn btn-sm btn-primary flex-grow-1 py-1 text-nowrap" type="submit" data-i18n="addUser">Add</button>
+                     <button class="btn btn-sm btn-outline-secondary py-1" type="button" data-action="action-generate-user" data-i18n-title="generateRandomUser" data-i18n-label="generateRandomUser"><i class="bi bi-lightning-fill" aria-hidden="true"></i></button>
+                  </div>
+                  <div class="col-12 mt-2">
+                     <a class="text-decoration-none small text-muted" data-bs-toggle="collapse" href="#advanced-user-settings" role="button" aria-expanded="false" aria-controls="advanced-user-settings">
+                        <i class="bi bi-gear" aria-hidden="true"></i> <span data-i18n="advancedSettings">Advanced Settings (Region Lock)</span>
+                     </a>
+                     <div class="collapse mt-2" id="advanced-user-settings">
+                        <select class="form-select form-select-sm" name="allowed_countries" id="user-allowed-countries" multiple size="3" aria-describedby="user-allowed-countries-help" data-i18n-label="allowedCountries" aria-label="Allowed Countries (Region Lock)">
+                           <!-- Options populated dynamically -->
+                        </select>
+                        <div id="user-allowed-countries-help" class="form-text small mt-1" style="font-size: 0.7rem;" data-i18n="allowedCountriesHelp">Select countries to allow access. Leave empty to allow all. Ctrl+Click to select multiple.</div>
+                     </div>
+                  </div>
+               </form>
+               <ul id="user-list" class="list-group list-group-flush max-h-400-scroll"></ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Provider Selection (Visible only when User Selected) -->
+        <div class="col-md-6 d-none" id="provider-section">
+          <div class="card h-100">
+             <div class="card-header" data-i18n="providerManagement">Providers</div>
+             <div class="alert alert-info py-2 px-3 small mb-2" data-i18n="helpProviderManagement">CTN34 gibi kaynak linklerini eklediğin yer.</div>
+             <div class="card-body">
+                <div id="provider-list-container">
+                   <p class="text-muted small" data-i18n="selectUserHint">Providers for selected user:</p>
+                   <ul id="provider-list" class="list-group list-group-flush mb-3"></ul>
+                   <button id="add-provider-btn" class="btn btn-sm btn-outline-primary w-100" data-action="action-add-provider" data-i18n="addProvider">Add Provider</button>
+                   <form id="provider-bulk-url-form" class="mt-3 d-none">
+                     <div class="small fw-semibold mb-2" data-i18n="bulkProviderUrlUpdate">Bulk Provider URL Update</div>
+                     <div class="row g-2">
+                       <div class="col-12 col-lg-5">
+                         <input id="provider-bulk-url-from" class="form-control form-control-sm" type="url" placeholder="http://provider1.com" data-i18n-label="bulkProviderUrlFrom" aria-label="Old provider URL" required>
+                       </div>
+                       <div class="col-12 col-lg-5">
+                         <input id="provider-bulk-url-to" class="form-control form-control-sm" type="url" placeholder="http://provider2.com" data-i18n-label="bulkProviderUrlTo" aria-label="New provider URL" required>
+                       </div>
+                       <div class="col-12 col-lg-2">
+                         <button id="provider-bulk-url-btn" class="btn btn-sm btn-outline-warning w-100" type="submit" data-i18n="bulkProviderUrlRun">Update</button>
+                       </div>
+                     </div>
+                   </form>
+                </div>
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- Main Content Area -->
+        <div class="col-12">
+           <!-- Details Panel -->
+           <div class="card mb-4">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                 <div>
+                    <span data-i18n="selectedUser">Selected User</span>: <span id="selected-user-label" class="fw-bold">-</span>
+                 </div>
+                 <div>
+                     <button id="header-shares-btn" class="btn btn-sm btn-warning me-1 d-none" data-i18n="manageShares">Manage Shares</button>
+                     <button id="header-play-btn" class="btn btn-sm btn-success d-none" data-i18n="openWebPlayer">Open Web Player</button>
+                 </div>
               </div>
               <div class="card-body">
-                <div id="user-details-empty" class="text-center py-5 text-muted"><div class="fs-1 mb-3"><i class="bi bi-person-circle"></i></div><h5 data-i18n="selectUserToManage">Select a user from the list to manage their details</h5></div>
-                <div id="user-details-content" class="d-none">
-                  <ul class="nav nav-tabs mb-3" id="user-tabs" role="tablist">
-                    <li class="nav-item" role="presentation"><button class="nav-link active" id="tab-channels-btn" data-bs-toggle="tab" data-bs-target="#tab-channels" type="button" role="tab" aria-controls="tab-channels" aria-selected="true" data-i18n="channels">Channels</button></li>
-                    <li class="nav-item" role="presentation"><button class="nav-link" id="tab-backups-btn" data-bs-toggle="tab" data-bs-target="#tab-backups" type="button" role="tab" aria-controls="tab-backups" aria-selected="false" data-i18n="backups">Backups</button></li>
-                    <li class="nav-item" role="presentation"><button class="nav-link" id="tab-xtream-btn" data-bs-toggle="tab" data-bs-target="#tab-xtream" type="button" role="tab" aria-controls="tab-xtream" aria-selected="false" data-i18n="xtreamCodes">Xtream Codes</button></li>
-                  </ul>
-                  <div class="tab-content" id="user-tab-content">
-                    <div class="tab-pane fade show active" id="tab-channels" role="tabpanel">
-                      <div class="alert alert-info py-2 small" style="background:rgba(255,68,68,0.05);border-color:rgba(255,68,68,0.1)" data-i18n="helpCategories">Kendi paketlerini oluşturduğun yer.</div>
-                      <div class="alert alert-info py-2 small" style="background:rgba(255,68,68,0.05);border-color:rgba(255,68,68,0.1)" data-i18n="helpChannels">Sağdan soldan kanal seçip paketine eklersin.</div>
-                      <div class="row">
-                        <div class="col-md-5">
-                          <h6 data-i18n="categories">Categories</h6>
-                          <div class="btn-group btn-group-sm w-100" role="group">
-                            <input type="radio" class="btn-check category-type-filter" name="cat-filter-type" id="cat-filter-live" value="live" checked autocomplete="off"><label class="btn btn-outline-secondary" for="cat-filter-live" data-i18n="typeLive">Live</label>
-                            <input type="radio" class="btn-check category-type-filter" name="cat-filter-type" id="cat-filter-movie" value="movie" autocomplete="off"><label class="btn btn-outline-secondary" for="cat-filter-movie" data-i18n="typeMovie">Movies</label>
-                            <input type="radio" class="btn-check category-type-filter" name="cat-filter-type" id="cat-filter-series" value="series" autocomplete="off"><label class="btn btn-outline-secondary" for="cat-filter-series" data-i18n="typeSeries">Series</label>
-                            <input type="radio" class="btn-check category-type-filter" name="cat-filter-type" id="cat-filter-radio" value="radio" autocomplete="off"><label class="btn btn-outline-secondary" for="cat-filter-radio" data-i18n="typeRadio">Radio</label>
+                 <!-- Empty State -->
+                 <div id="user-details-empty" class="text-center py-5 text-muted">
+                    <div class="fs-1 mb-3"><i class="bi bi-person-circle" aria-hidden="true"></i></div>
+                    <h5 data-i18n="selectUserToManage">Select a user from the list to manage their details</h5>
+                 </div>
+
+                 <!-- Content -->
+                 <div id="user-details-content" class="d-none">
+                 <!-- Tabs for User Details -->
+                 <ul class="nav nav-tabs mb-3" id="user-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                       <button class="nav-link active" id="tab-channels-btn" data-bs-toggle="tab" data-bs-target="#tab-channels" type="button" role="tab" aria-controls="tab-channels" aria-selected="true" data-i18n="channels">Channels</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                       <button class="nav-link" id="tab-backups-btn" data-bs-toggle="tab" data-bs-target="#tab-backups" type="button" role="tab" aria-controls="tab-backups" aria-selected="false" data-i18n="backups">Backups</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                       <button class="nav-link" id="tab-xtream-btn" data-bs-toggle="tab" data-bs-target="#tab-xtream" type="button" role="tab" aria-controls="tab-xtream" aria-selected="false" data-i18n="xtreamCodes">Xtream Codes</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                       <button class="nav-link" id="tab-hdhr-btn" data-bs-toggle="tab" data-bs-target="#tab-hdhr" type="button" role="tab" aria-controls="tab-hdhr" aria-selected="false" data-i18n-label="hdhomerun" data-i18n="hdhomerun">HDHomeRun</button>
+                    </li>
+                    <li class="nav-item d-none" id="tab-stalker-item" role="presentation">
+                       <button class="nav-link" id="tab-stalker-btn" data-bs-toggle="tab" data-bs-target="#tab-stalker" type="button" role="tab" aria-controls="tab-stalker" aria-selected="false" data-i18n="stalkerMag">Stalker/MAG</button>
+                    </li>
+                 </ul>
+
+                 <div class="tab-content" id="user-tab-content">
+                    <!-- Channels Tab -->
+                    <div class="tab-pane fade show active" id="tab-channels" role="tabpanel" aria-labelledby="tab-channels-btn">
+                       <div class="alert alert-info py-2 small" data-i18n="helpCategories">Kendi paketlerini oluşturduğun yer.</div>
+                       <div class="alert alert-info py-2 small" data-i18n="helpChannels">Sağdan soldan kanal seçip paketine eklersin.</div>
+                       <div class="row">
+                          <div class="col-md-5">
+                             <h6 data-i18n="categories">Categories</h6>
+                             <div class="mb-2">
+                                <div class="btn-group btn-group-sm w-100" role="group">
+                                   <input type="radio" class="btn-check category-type-filter" name="cat-filter-type" id="cat-filter-live" value="live" checked autocomplete="off">
+                                   <label class="btn btn-outline-secondary" for="cat-filter-live" data-i18n="typeLive">Live</label>
+
+                                   <input type="radio" class="btn-check category-type-filter" name="cat-filter-type" id="cat-filter-movie" value="movie" autocomplete="off">
+                                   <label class="btn btn-outline-secondary" for="cat-filter-movie" data-i18n="typeMovie">Movies</label>
+
+                                   <input type="radio" class="btn-check category-type-filter" name="cat-filter-type" id="cat-filter-series" value="series" autocomplete="off">
+                                   <label class="btn btn-outline-secondary" for="cat-filter-series" data-i18n="typeSeries">Series</label>
+
+                                   <input type="radio" class="btn-check category-type-filter" name="cat-filter-type" id="cat-filter-radio" value="radio" autocomplete="off">
+                                   <label class="btn btn-outline-secondary" for="cat-filter-radio" data-i18n="typeRadio">Radio</label>
+                                </div>
+                             </div>
+                             <form id="category-form" class="input-group input-group-sm mb-2">
+                                <input class="form-control" name="name" data-i18n-placeholder="newCategory" data-i18n-label="newCategory" placeholder="New Category" required />
+                                <button class="btn btn-outline-secondary" type="submit" data-i18n-label="addCategory" data-i18n-title="addCategory">+</button>
+                             </form>
+                             <div class="d-flex justify-content-between align-items-center mb-1">
+                                <div class="form-check form-check-sm">
+                                   <input class="form-check-input" type="checkbox" id="cat-select-all-toggle">
+                                   <label class="form-check-label small" for="cat-select-all-toggle" data-i18n="all">All</label>
+                                </div>
+                                <button class="btn btn-sm btn-danger py-0 d-none" id="cat-bulk-delete-btn" data-i18n="del">Del</button>
+                             </div>
+                             <ul id="category-list" class="list-group small max-h-400-scroll"></ul>
+                             <button id="import-categories-btn" class="btn btn-outline-primary btn-sm w-100 mt-2"><i class="bi bi-box-arrow-in-down" aria-hidden="true"></i> <span data-i18n="importCategories">Import Categories</span></button>
                           </div>
-                          <form id="category-form" class="input-group input-group-sm mb-2"><input class="form-control" name="name" placeholder="New Category" required /><button class="btn btn-outline-secondary" type="submit" data-i18n-label="addCategory" data-i18n-title="addCategory">+</button></form>
-                          <ul id="category-list" class="list-group small max-h-400-scroll"></ul>
-                        </div>
-                        <div class="col-md-7">
-                          <h6 data-i18n="channels">Channels</h6>
-                          <div class="input-group input-group-sm mb-2"><input type="text" id="provider-channel-search" class="form-control" placeholder="Search Available..." disabled /><button class="btn btn-outline-secondary d-none" type="button" id="provider-channel-search-clear"><span aria-hidden="true">✕</span></button></div>
-                          <ul id="provider-channel-list" class="list-group small mt-1 max-h-300-scroll"></ul>
-                          <div class="d-flex justify-content-between align-items-center mb-1 px-1 mt-2">
-                            <button class="btn btn-sm btn-info py-0 me-1 d-none" id="chan-bulk-share-btn" data-i18n="share">Share</button>
-                            <button class="btn btn-sm btn-danger py-0 d-none" id="chan-bulk-delete-btn" data-i18n="del">Del</button>
+                          <div class="col-md-7">
+                             <h6 data-i18n="channels">Channels</h6>
+                             <div class="mb-2">
+                                <div class="btn-group btn-group-sm w-100" role="group">
+                                   <input type="radio" class="btn-check channel-type-filter" name="chan-filter-type" id="chan-filter-live" value="live" checked autocomplete="off">
+                                   <label class="btn btn-outline-secondary" for="chan-filter-live" data-i18n="typeLive">Live</label>
+
+                                   <input type="radio" class="btn-check channel-type-filter" name="chan-filter-type" id="chan-filter-movie" value="movie" autocomplete="off">
+                                   <label class="btn btn-outline-secondary" for="chan-filter-movie" data-i18n="typeMovie">Movies</label>
+
+                                   <input type="radio" class="btn-check channel-type-filter" name="chan-filter-type" id="chan-filter-series" value="series" autocomplete="off">
+                                   <label class="btn btn-outline-secondary" for="chan-filter-series" data-i18n="typeSeries">Series</label>
+                                </div>
+                             </div>
+                             <select id="channel-provider-select" class="form-select form-select-sm mb-2" data-i18n-label="selectProvider"></select>
+
+                             <div class="row g-2">
+                                <div class="col-6">
+                                   <div class="border rounded p-1 small text-center mb-1" id="available-channels-header">Available</div>
+                                   <div class="input-group input-group-sm mb-1">
+                                      <input type="text" id="provider-channel-search" class="form-control" data-i18n-placeholder="searchAvailableChannels" data-i18n-label="searchAvailableChannels" placeholder="Search Available..." disabled />
+                                      <button class="btn btn-outline-secondary d-none" type="button" id="provider-channel-search-clear" data-i18n-label="clearSearch" data-i18n-title="clearSearch"><span aria-hidden="true">✕</span></button>
+                                   </div>
+                                   <ul id="provider-channel-list" class="list-group small mt-1 max-h-300-scroll"></ul>
+                                </div>
+                                <div class="col-6">
+                                   <div class="border rounded p-1 small text-center mb-1" id="assigned-channels-header">Assigned</div>
+                                   <div class="input-group input-group-sm mb-1">
+                                      <input type="text" id="user-channel-search" class="form-control" data-i18n-placeholder="searchAssignedChannels" data-i18n-label="searchAssignedChannels" placeholder="Search Assigned..." disabled />
+                                      <button class="btn btn-outline-secondary d-none" type="button" id="user-channel-search-clear" data-i18n-label="clearSearch" data-i18n-title="clearSearch"><span aria-hidden="true">✕</span></button>
+                                   </div>
+                                   <div class="d-flex justify-content-between align-items-center mb-1 px-1">
+                                      <div class="form-check form-check-sm">
+                                         <input class="form-check-input" type="checkbox" id="chan-select-all-toggle" data-i18n-label="selectAll">
+                                      </div>
+                                      <div>
+                                          <button class="btn btn-sm btn-info py-0 me-1 d-none" id="chan-bulk-share-btn" data-i18n="share">Share</button>
+                                          <button class="btn btn-sm btn-danger py-0 d-none" id="chan-bulk-delete-btn" data-i18n="del">Del</button>
+                                      </div>
+                                   </div>
+                                   <ul id="user-channel-list" class="list-group small mt-1 max-h-300-scroll"></ul>
+                                </div>
+                             </div>
                           </div>
-                          <ul id="user-channel-list" class="list-group small mt-1 max-h-300-scroll"></ul>
-                        </div>
+                       </div>
+                    </div>
+
+                    <!-- Backups Tab -->
+                    <div class="tab-pane fade" id="tab-backups" role="tabpanel" aria-labelledby="tab-backups-btn">
+                       <div class="d-flex justify-content-between align-items-center mb-3">
+                          <h6 class="m-0" data-i18n="buildedCategoriesBackups">Builded Categories Backups</h6>
+                          <button class="btn btn-sm btn-primary" id="btn-create-backup" data-i18n="createBackup">Create Backup</button>
+                       </div>
+                       <div class="alert alert-info small py-2 mb-3" id="backup-limit-info">
+                          <span data-i18n="backupLimitInfo">Maximum 5 backups allowed. Older backups must be deleted to create new ones once the limit is reached.</span>
+                       </div>
+                       <div class="table-responsive">
+                          <table class="table table-sm table-striped">
+                             <thead>
+                                <tr>
+                                   <th data-i18n="name">Name</th>
+                                   <th data-i18n="date">Date</th>
+                                   <th data-i18n="categories">Categories</th>
+                                   <th data-i18n="channels">Channels</th>
+                                   <th class="text-end" data-i18n="actions">Actions</th>
+                                </tr>
+                             </thead>
+                             <tbody id="backups-tbody">
+                                <tr><td colspan="5" class="text-center text-muted" data-i18n="loading">Loading...</td></tr>
+                             </tbody>
+                          </table>
+                       </div>
+                    </div>
+
+                    <!-- Xtream Codes Tab -->
+                    <div class="tab-pane fade" id="tab-xtream" role="tabpanel" aria-labelledby="tab-xtream-btn">
+                       <div class="mb-2">
+                          <label class="form-label small fw-bold" data-i18n="url" for="xtream-url">URL</label>
+                          <div class="input-group input-group-sm">
+                             <input type="text" class="form-control" id="xtream-url" readonly>
+                             <button class="btn btn-outline-secondary" data-copy-target="xtream-url" data-i18n-label="copyToClipboardAction" data-i18n-title="copyToClipboardAction"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                          </div>
+                       </div>
+
+                       <div class="row g-2 mb-2">
+                          <div class="col-md-6">
+                             <label class="form-label small fw-bold" data-i18n="username" for="xtream-user">Username</label>
+                             <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" id="xtream-user" readonly>
+                                <button class="btn btn-outline-secondary" data-copy-target="xtream-user" data-i18n-label="copyToClipboardAction" data-i18n-title="copyToClipboardAction"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                             </div>
+                          </div>
+                          <div class="col-md-6">
+                             <label class="form-label small fw-bold" data-i18n="password" for="xtream-pass">Password</label>
+                             <div class="input-group input-group-sm">
+                                <input type="password" class="form-control" id="xtream-pass" readonly>
+                                <button class="btn btn-outline-secondary" type="button" data-toggle-password="xtream-pass" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+                                <button class="btn btn-outline-secondary" data-copy-target="xtream-pass" data-i18n-label="copyToClipboardAction" data-i18n-title="copyToClipboardAction"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                             </div>
+                          </div>
+                       </div>
+
+                       <div class="mb-2">
+                          <label class="form-label small fw-bold" data-i18n="epgUrlLabel" for="epg-url">EPG URL</label>
+                          <div class="input-group input-group-sm">
+                             <input type="text" class="form-control" id="epg-url" readonly>
+                             <button class="btn btn-outline-secondary" data-copy-target="epg-url" data-i18n-label="copyToClipboardAction" data-i18n-title="copyToClipboardAction"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                          </div>
+                       </div>
+
+                       <div class="mb-3">
+                          <label class="form-label small fw-bold" data-i18n="m3uLink" for="m3u-link">M3U Link</label>
+                          <div class="input-group input-group-sm">
+                             <input type="text" class="form-control" id="m3u-link" readonly>
+                             <button class="btn btn-outline-secondary" data-copy-target="m3u-link" data-i18n-label="copyToClipboardAction" data-i18n-title="copyToClipboardAction"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                          </div>
+                       </div>
+
+                       <button class="btn btn-primary w-100" data-action="action-copy-all-xtream" data-i18n="copyAll">Copy All Credentials</button>
+                    </div>
+
+                    <!-- HDHomeRun Tab -->
+                    <div class="tab-pane fade" id="tab-hdhr" role="tabpanel" aria-labelledby="tab-hdhr-btn">
+                       <div id="hdhr-enabled-section" class="d-none">
+                          <div class="alert alert-info small">
+                             <span data-i18n="useUrlToConfigurePlex">Use the URL below to configure Plex DVR or Emby Live TV.</span>
+                             <br><strong data-i18n="note">Note:</strong> <span data-i18n="featureEmulatesHDHomeRun">This feature emulates an HDHomeRun tuner.</span>
+                          </div>
+                          <div class="mb-3">
+                             <label class="form-label small fw-bold" for="hdhr-url" data-i18n="deviceUrl">Device URL</label>
+                             <div class="input-group input-group-sm">
+                                <input type="text" class="form-control" id="hdhr-url" readonly>
+                                <button class="btn btn-outline-secondary" data-copy-target="hdhr-url" data-i18n-label="copyToClipboardAction" data-i18n-title="copyToClipboardAction"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                             </div>
+                          </div>
+                       </div>
+                       <div id="hdhr-disabled-section" class="d-none">
+                          <div class="alert alert-warning small">
+                             <span data-i18n="hdhrDisabled">HDHomeRun emulation is disabled for this user.</span>
+                             <br><span data-i18n="enableInEditUser">Enable it in the Edit User menu.</span>
+                          </div>
+                       </div>
+                    </div>
+
+                    <!-- Stalker/MAG Tab -->
+                    <div class="tab-pane fade" id="tab-stalker" role="tabpanel" aria-labelledby="tab-stalker-btn">
+                       <div class="alert alert-info small">
+                          <span data-i18n="stalkerExperimentalPortal">Experimental portal support for live TV, movies, series, radio, and catch-up. Register each client's MAC address before connecting.</span>
+                       </div>
+                       <div class="mb-3">
+                          <label class="form-label small fw-bold" for="stalker-portal-url" data-i18n="stalkerPortalUrl">Portal URL</label>
+                          <div class="input-group input-group-sm">
+                             <input type="text" class="form-control" id="stalker-portal-url" readonly>
+                             <button class="btn btn-outline-secondary" data-copy-target="stalker-portal-url" data-i18n-label="stalkerCopyPortalUrl" data-i18n-title="stalkerCopyPortalUrl" aria-label="Copy portal URL" title="Copy portal URL"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                          </div>
+                       </div>
+                       <form id="stalker-device-form" class="input-group input-group-sm mb-3">
+                          <input id="stalker-device-mac" class="form-control" autocomplete="off" placeholder="00:1A:79:00:00:00" data-i18n-label="stalkerDeviceMac" aria-label="Device MAC address" required>
+                          <input id="stalker-device-pin" class="form-control" type="password" inputmode="numeric" pattern="[0-9]{4,8}" maxlength="8" autocomplete="new-password" data-i18n-placeholder="stalkerParentalPinOptional" data-i18n-label="stalkerParentalPin" aria-label="Parental PIN" placeholder="Optional PIN">
+                          <button class="btn btn-primary" type="submit" data-i18n="stalkerAddDevice">Add device</button>
+                       </form>
+                       <ul id="stalker-device-list" class="list-group small"></ul>
+                    </div>
+                 </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </div>
+      
+      <div class="card mt-4" id="epg-sources-card">
+         <div class="card-header d-flex justify-content-between align-items-center">
+            <span data-i18n="epgSources">EPG Sources</span>
+            <div>
+               <button id="add-epg-source-btn" class="btn btn-sm btn-primary" data-i18n-label="addEpgSource" data-i18n-title="addEpgSourceTitle"><i class="bi bi-plus-lg" aria-hidden="true"></i></button>
+               <button id="browse-epg-sources-btn" class="btn btn-sm btn-secondary"><i class="bi bi-journal-text" aria-hidden="true"></i> <span data-i18n="browse">Browse</span></button>
+               <button id="update-all-epg-btn" class="btn btn-sm btn-info"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> <span data-i18n="updateAll">Update All</span></button>
+               <button id="clear-epg-btn" class="btn btn-sm btn-danger" data-i18n="clearEpg">Clear EPG</button>
+            </div>
+         </div>
+         <div class="card-body">
+            <ul id="epg-sources-list" class="list-group list-group-flush"></ul>
+         </div>
+      </div>
+
+    </div> <!-- End view-dashboard -->
+
+    <!-- View: Security -->
+    <div id="view-security" class="d-none">
+      <!-- Settings -->
+      <div class="card mb-4">
+         <div class="card-header" data-i18n="settings">Settings</div>
+         <div class="card-body">
+            <form id="security-settings-form">
+               <div class="row mb-3">
+                  <div class="col-md-6">
+                     <label class="form-label" data-i18n="adminBlockThreshold" for="setting-admin-threshold">Admin Block Threshold (attempts)</label>
+                     <input type="number" class="form-control" name="admin_block_threshold" id="setting-admin-threshold" placeholder="5">
+                  </div>
+                  <div class="col-md-6">
+                     <label class="form-label" data-i18n="iptvBlockThreshold" for="setting-iptv-threshold">IPTV Block Threshold (attempts)</label>
+                     <input type="number" class="form-control" name="iptv_block_threshold" id="setting-iptv-threshold" placeholder="10">
+                  </div>
+               </div>
+               <div class="row mb-3">
+                  <div class="col-md-6">
+                     <label class="form-label" data-i18n="adminBlockDuration" for="setting-admin-duration">Admin Block Duration (seconds)</label>
+                     <input type="number" class="form-control" name="admin_block_duration" id="setting-admin-duration" placeholder="3600">
+                  </div>
+                  <div class="col-md-6">
+                     <label class="form-label" data-i18n="iptvBlockDuration" for="setting-iptv-duration">IPTV Block Duration (seconds)</label>
+                     <input type="number" class="form-control" name="iptv_block_duration" id="setting-iptv-duration" placeholder="3600">
+                  </div>
+               </div>
+
+               <hr>
+               <div class="row mb-3 mt-3">
+                  <div class="col-12">
+                     <h6 data-i18n="geoIpSettings">GeoIP Database</h6>
+                     <p id="geoip-settings-help" class="small text-muted mb-2"><span data-i18n="geoIpSettingsHelp">Update the local GeoIP database used for Region Locking. This downloads the latest MaxMind GeoLite2 data.</span> <a href="https://support.maxmind.com/hc/en-us/articles/4407111582235-Generate-a-License-Key" target="_blank" data-i18n="getFreeKeyHelp">Get a free License Key.</a></p>
+                  </div>
+                  <div class="col-md-8 mb-2">
+                     <label class="form-label" data-i18n="maxmindLicenseKey" for="setting-geoip-license-key">MaxMind License Key</label>
+                     <div class="input-group">
+                        <input type="password" class="form-control" name="geoip_license_key" id="setting-geoip-license-key" placeholder="Enter License Key for Updates" aria-describedby="geoip-settings-help">
+                        <button class="btn btn-outline-secondary" type="button" data-toggle-password="setting-geoip-license-key" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+                     </div>
+                  </div>
+                  <div class="col-md-4 d-flex align-items-end mb-2">
+                     <button class="btn btn-secondary w-100" type="button" id="btn-update-geoip" data-i18n="updateGeoIp">Update GeoIP</button>
+                  </div>
+               </div>
+
+               <!-- Hidden field to maintain backward compatibility if needed, or we can just ignore it -->
+               <!-- <input type="hidden" name="ip_block_duration" id="setting-block-duration"> -->
+
+               <button class="btn btn-primary" type="submit" data-i18n="saveSettings">Save Settings</button>
+            </form>
+         </div>
+      </div>
+
+      <div class="row mb-4">
+         <div class="col-md-6">
+            <h5 data-i18n="blockIp">Block IP</h5>
+            <form id="block-ip-form" class="row g-2 mb-2 align-items-center">
+               <div class="col-12 col-sm-4 col-md-auto"><input class="form-control form-control-sm" name="ip" data-i18n-label="ip" placeholder="IP Address" required></div>
+               <div class="col-12 col-sm-8 col-md"><input class="form-control form-control-sm" name="reason" data-i18n-placeholder="whitelistReason" data-i18n-label="whitelistReason" placeholder="Reason"></div>
+               <div class="col-8 col-sm-6 col-md-auto">
+                  <select class="form-select form-select-sm w-100" name="duration" data-i18n-label="blockDuration">
+                     <option value="3600">1h</option>
+                     <option value="21600">6h</option>
+                     <option value="43200">12h</option>
+                     <option value="86400">24h</option>
+                     <option value="manual" data-i18n="custom">Custom</option>
+                  </select>
+               </div>
+               <div class="col-4 col-sm-6 col-md-auto"><button class="btn btn-sm btn-danger w-100" data-i18n="block">Block</button></div>
+            </form>
+            <ul id="blocked-ip-list" class="list-group small max-h-200-scroll"></ul>
+         </div>
+         <div class="col-md-6">
+            <h5 data-i18n="whitelistIp">Whitelist IP</h5>
+            <form id="whitelist-ip-form" class="row g-2 mb-2">
+               <div class="col-12 col-sm-4 col-md-auto"><input class="form-control form-control-sm" name="ip" data-i18n-label="ip" placeholder="IP Address" required></div>
+               <div class="col-12 col-sm-8 col-md"><input class="form-control form-control-sm" name="description" data-i18n-placeholder="reasonPlaceholder" data-i18n-label="whitelistReason" placeholder="Reason"></div>
+               <div class="col-12 col-sm-12 col-md-auto"><button class="btn btn-sm btn-success w-100" data-i18n="whitelist">Whitelist</button></div>
+            </form>
+            <ul id="whitelisted-ip-list" class="list-group small max-h-200-scroll"></ul>
+         </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-2">
+         <h5 data-i18n="piconCache">Picon Cache</h5>
+         <button class="btn btn-sm btn-outline-danger" data-action="action-prune-picons" data-i18n="pruneCache">Prune Cache</button>
+      </div>
+      <div class="card mb-4">
+          <div class="card-body">
+              <span class="text-muted small" data-i18n="piconCacheHint">Clearing the cache will force re-download of all picons.</span>
+          </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-2">
+         <h5 data-i18n="securityLogs">Security Logs</h5>
+         <button class="btn btn-sm btn-outline-danger" data-action="action-clear-security-logs" data-i18n="clearLogs">Clear Logs</button>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body p-0 table-responsive max-h-300-scroll">
+          <table class="table table-sm table-striped mb-0 small">
+             <thead>
+               <tr>
+                 <th data-i18n="time">Time</th>
+                 <th data-i18n="ip">IP</th>
+                 <th data-i18n="action">Action</th>
+                 <th data-i18n="details">Details</th>
+               </tr>
+             </thead>
+             <tbody id="security-logs-tbody">
+                <tr><td colspan="4" class="text-center text-muted" data-i18n="loading">Loading...</td></tr>
+             </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-2">
+         <h5 data-i18n="clientLogs">Client Logs</h5>
+         <button class="btn btn-sm btn-outline-danger" data-action="action-clear-client-logs" data-i18n="clearLogs">Clear Logs</button>
+      </div>
+      <div class="card">
+        <div class="card-body p-0 table-responsive max-h-300-scroll">
+          <table class="table table-sm table-striped mb-0 small">
+             <thead>
+               <tr>
+                 <th data-i18n="time">Time</th>
+                 <th data-i18n="level">Level</th>
+                 <th data-i18n="message">Message</th>
+                 <th data-i18n="details">Details</th>
+               </tr>
+             </thead>
+             <tbody id="client-logs-tbody">
+                <tr><td colspan="4" class="text-center text-muted" data-i18n="loading">Loading...</td></tr>
+             </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- View: Import/Export -->
+    <div id="view-import-export" class="d-none">
+      <div class="row mt-4">
+        <!-- Export Card -->
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-header" data-i18n="exportData">Export Data</div>
+            <div class="card-body">
+              <p class="text-muted small" data-i18n="exportDescription">Export users, providers, and configurations to a secure file.</p>
+
+              <form id="export-form">
+                <div class="mb-3">
+                  <label class="form-label" data-i18n="selectUserExport" for="export-user-select">Select User to Export</label>
+                  <select class="form-select" id="export-user-select" name="user_id">
+                    <option value="all" data-i18n="allUsers">All Users</option>
+                    <!-- Populated by JS -->
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label" data-i18n="encryptionPassword" for="export-password">Encryption Password</label>
+                  <div class="input-group">
+                    <input type="password" class="form-control" name="password" id="export-password" required minlength="8" data-i18n-placeholder="passwordPlaceholder" aria-describedby="export-password-help">
+                    <button class="btn btn-outline-secondary" type="button" data-toggle-password="export-password" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+                  </div>
+                  <div class="form-text" data-i18n="encryptionPasswordHint" id="export-password-help">This password will be required to decrypt and import the data.</div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100" id="export-btn" data-i18n="exportBtn">Export Data</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Import Card -->
+        <div class="col-md-6 mb-4">
+          <div class="card h-100">
+            <div class="card-header" data-i18n="importData">Import Data</div>
+            <div class="card-body">
+              <p class="text-muted small" data-i18n="importDescription">Import data from a previously exported file.</p>
+
+              <form id="import-form">
+                <div class="mb-3">
+                  <label class="form-label" data-i18n="fileSelect" for="import-file">Select File</label>
+                  <input type="file" class="form-control" name="file" id="import-file" required accept=".bin">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label" data-i18n="decryptionPassword" for="import-password">Decryption Password</label>
+                  <div class="input-group">
+                    <input type="password" class="form-control" name="password" id="import-password" required data-i18n-placeholder="passwordPlaceholder">
+                    <button class="btn btn-outline-secondary" type="button" data-toggle-password="import-password" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-warning w-100" id="import-btn" data-i18n="importBtn">Import Data</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View: Statistics -->
+    <div id="view-statistics" class="d-none">
+      <div class="row mt-4">
+        <!-- System Information -->
+        <div class="col-12 mb-4">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+               <span data-i18n="systemInformation">System Information</span>
+            </div>
+            <div class="card-body">
+              <div class="row text-center">
+                <div class="col-md-3 mb-3 mb-md-0">
+                  <h6 class="text-muted" data-i18n="cpuUtilization">CPU</h6>
+                  <p class="display-6 fw-bold text-primary mb-1" id="sys-cpu">0%</p>
+                  <small class="text-muted"><span id="sys-cpu-cores">0</span> <span data-i18n="cores">Cores</span></small>
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                  <h6 class="text-muted" data-i18n="memoryUtilization">Memory</h6>
+                  <p class="display-6 fw-bold text-success mb-1" id="sys-mem">0%</p>
+                  <small class="text-muted" id="sys-mem-detail">0 / 0 GB</small>
+                </div>
+                <div class="col-md-3 mb-3 mb-md-0">
+                  <h6 class="text-muted" data-i18n="hddUtilization">HDD</h6>
+                  <p class="display-6 fw-bold text-info mb-1" id="sys-hdd">0%</p>
+                  <small class="text-muted" id="sys-hdd-detail">0 / 0 GB</small>
+                </div>
+                <div class="col-md-3">
+                  <h6 class="text-muted" data-i18n="bandwidthUtilization">Network</h6>
+                  <div class="d-flex flex-column align-items-center justify-content-center h-100">
+                      <div class="mb-1">
+                          <span class="badge bg-success" data-i18n="rx">Rx</span> <span id="sys-net-rx" class="fw-bold">0 KB/s</span>
+                          <div class="small text-muted mt-1"><span data-i18n="totalRx">Total:</span> <span id="sys-net-rx-total">0 MB</span></div>
                       </div>
-                    </div>
-                    <div class="tab-pane fade" id="tab-backups" role="tabpanel">
-                      <div class="d-flex justify-content-between align-items-center mb-3"><h6 class="m-0" data-i18n="buildedCategoriesBackups">Builded Categories Backups</h6><button class="btn btn-sm btn-primary" id="btn-create-backup" data-i18n="createBackup">Create Backup</button></div>
-                      <div class="table-responsive"><table class="table table-sm table-striped"><thead><tr><th data-i18n="name">Name</th><th data-i18n="date">Date</th><th data-i18n="categories">Categories</th><th data-i18n="channels">Channels</th><th class="text-end" data-i18n="actions">Actions</th></tr></thead><tbody id="backups-tbody"><tr><td colspan="5" class="text-center text-muted" data-i18n="loading">Loading...</td></tr></tbody></table></div>
-                    </div>
-                    <div class="tab-pane fade" id="tab-xtream" role="tabpanel">
-                      <div class="mb-2"><label class="form-label small fw-bold" data-i18n="url" for="xtream-url">URL</label><div class="input-group input-group-sm"><input type="text" class="form-control" id="xtream-url" readonly><button class="btn btn-outline-secondary" data-copy-target="xtream-url"><i class="bi bi-clipboard"></i></button></div></div>
-                      <div class="row g-2 mb-2"><div class="col-md-6"><label class="form-label small fw-bold" data-i18n="username" for="xtream-user">Username</label><div class="input-group input-group-sm"><input type="text" class="form-control" id="xtream-user" readonly><button class="btn btn-outline-secondary" data-copy-target="xtream-user"><i class="bi bi-clipboard"></i></button></div></div><div class="col-md-6"><label class="form-label small fw-bold" data-i18n="password" for="xtream-pass">Password</label><div class="input-group input-group-sm"><input type="password" class="form-control" id="xtream-pass" readonly><button class="btn btn-outline-secondary" data-copy-target="xtream-pass"><i class="bi bi-clipboard"></i></button></div></div></div>
-                      <button class="btn btn-primary w-100" data-action="action-copy-all-xtream" data-i18n="copyAll">Copy All Credentials</button>
-                    </div>
+                      <div>
+                          <span class="badge bg-primary" data-i18n="tx">Tx</span> <span id="sys-net-tx" class="fw-bold">0 KB/s</span>
+                          <div class="small text-muted mt-1"><span data-i18n="totalTx">Total:</span> <span id="sys-net-tx-total">0 MB</span></div>
+                      </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="card mt-4" id="epg-sources-card">
-          <div class="card-header d-flex justify-content-between align-items-center" style="border-color:rgba(255,68,68,0.1)"><span data-i18n="epgSources">EPG Sources</span><button class="btn btn-sm btn-primary" id="add-epg-source-btn" data-i18n-label="addEpgSource" data-i18n-title="addEpgSourceTitle"><i class="bi bi-plus-lg"></i></button></div>
-          <div class="card-body"><ul id="epg-sources-list" class="list-group list-group-flush"></ul></div>
-        </div>
       </div>
 
-      <!-- View: Security -->
-      <div id="view-security" class="d-none">
-        <div class="card mb-4">
-          <div class="card-header" style="border-color:rgba(255,68,68,0.1)"><i class="bi bi-gear me-2" style="color:#ff6b35"></i><span data-i18n="settings">Settings</span></div>
-          <div class="card-body">
-            <form id="security-settings-form">
-              <div class="row mb-3"><div class="col-md-6"><label class="form-label" data-i18n="adminBlockThreshold" for="setting-admin-threshold">Admin Block Threshold</label><input type="number" class="form-control" name="admin_block_threshold" id="setting-admin-threshold" placeholder="5"></div><div class="col-md-6"><label class="form-label" data-i18n="iptvBlockThreshold" for="setting-iptv-threshold">IPTV Block Threshold</label><input type="number" class="form-control" name="iptv_block_threshold" id="setting-iptv-threshold" placeholder="10"></div></div>
-              <div class="row mb-3"><div class="col-md-6"><label class="form-label" data-i18n="adminBlockDuration" for="setting-admin-duration">Admin Block Duration</label><input type="number" class="form-control" name="admin_block_duration" id="setting-admin-duration" placeholder="3600"></div><div class="col-md-6"><label class="form-label" data-i18n="iptvBlockDuration" for="setting-iptv-duration">IPTV Block Duration</label><input type="number" class="form-control" name="iptv_block_duration" id="setting-iptv-duration" placeholder="3600"></div></div>
-              <hr><div class="row mb-3 mt-3"><div class="col-12"><h6 data-i18n="geoIpSettings">GeoIP Database</h6><p class="small text-muted mb-2" data-i18n="geoIpSettingsHelp">Update the local GeoIP database.</p><div class="input-group"><input type="password" class="form-control" name="geoip_license_key" id="setting-geoip-license-key" placeholder="License Key"><button class="btn btn-outline-secondary" type="button" id="btn-update-geoip" data-i18n="updateGeoIp">Update</button></div></div></div>
-              <button class="btn btn-primary" type="submit" data-i18n="saveSettings">Save Settings</button>
-            </form>
+      <div class="row">
+        <!-- Active Streams -->
+        <div class="col-md-6 mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+             <h3 data-i18n="activeStreams" class="m-0 border-0">Active Streams</h3>
+             <span class="badge bg-primary" id="active-stream-count">0</span>
+          </div>
+          <div class="table-responsive max-h-400-scroll tv-container-border">
+              <table class="table table-striped mb-0 small">
+                <thead>
+                  <tr>
+                    <th data-i18n="username">User</th>
+                    <th data-i18n="channelName">Channel</th>
+                    <th data-i18n="duration">Time</th>
+                    <th data-i18n="ip">IP</th>
+                    <th data-i18n="actions">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="active-streams-tbody">
+                   <tr><td colspan="5" class="text-center text-muted" data-i18n="loading">Loading...</td></tr>
+                </tbody>
+              </table>
           </div>
         </div>
-        <div class="row mb-4"><div class="col-md-6"><h5 data-i18n="blockIp">Block IP</h5><form id="block-ip-form" class="row g-2 mb-2 align-items-center"><div class="col-12 col-sm-4 col-md-auto"><input class="form-control form-control-sm" name="ip" placeholder="IP Address" required></div><div class="col-12 col-sm-8 col-md"><input class="form-control form-control-sm" name="reason" placeholder="Reason"></div><div class="col-8 col-sm-6 col-md-auto"><select class="form-select form-select-sm w-100" name="duration"><option value="3600">1h</option><option value="21600">6h</option><option value="43200">12h</option><option value="86400">24h</option></select></div><div class="col-4 col-sm-6 col-md-auto"><button class="btn btn-sm btn-danger w-100" data-i18n="block">Block</button></div></form><ul id="blocked-ip-list" class="list-group small max-h-200-scroll"></ul></div><div class="col-md-6"><h5 data-i18n="whitelistIp">Whitelist IP</h5><form id="whitelist-ip-form" class="row g-2 mb-2"><div class="col-12 col-sm-4 col-md-auto"><input class="form-control form-control-sm" name="ip" placeholder="IP Address" required></div><div class="col-12 col-sm-8 col-md"><input class="form-control form-control-sm" name="description" placeholder="Reason"></div><div class="col-12 col-sm-12 col-md-auto"><button class="btn btn-sm btn-success w-100" data-i18n="whitelist">Whitelist</button></div></form><ul id="whitelisted-ip-list" class="list-group small max-h-200-scroll"></ul></div></div>
-        <div class="d-flex justify-content-between align-items-center mb-2"><h5 data-i18n="piconCache">Picon Cache</h5><button class="btn btn-sm btn-outline-danger" data-action="action-prune-picons" data-i18n="pruneCache">Prune Cache</button></div>
-        <div class="card mb-4"><div class="card-body p-0 table-responsive max-h-300-scroll"><table class="table table-sm table-striped mb-0 small"><thead><tr><th data-i18n="time">Time</th><th data-i18n="ip">IP</th><th data-i18n="action">Action</th><th data-i18n="details">Details</th></tr></thead><tbody id="security-logs-tbody"><tr><td colspan="4" class="text-center text-muted" data-i18n="loading">Loading...</td></tr></tbody></table></div></div>
-        <div class="d-flex justify-content-between align-items-center mb-2"><h5 data-i18n="clientLogs">Client Logs</h5><button class="btn btn-sm btn-outline-danger" data-action="action-clear-client-logs" data-i18n="clearLogs">Clear Logs</button></div>
-        <div class="card"><div class="card-body p-0 table-responsive max-h-300-scroll"><table class="table table-sm table-striped mb-0 small"><thead><tr><th data-i18n="time">Time</th><th data-i18n="level">Level</th><th data-i18n="message">Message</th><th data-i18n="details">Details</th></tr></thead><tbody id="client-logs-tbody"><tr><td colspan="4" class="text-center text-muted" data-i18n="loading">Loading...</td></tr></tbody></table></div></div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- PASSWORD CHANGE MODAL -->
-<div class="modal fade" id="passwordChangeModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content bg-dark border" style="border-color:rgba(255,68,68,0.3)">
-      <div class="modal-header" style="border-color:rgba(255,68,68,0.1)"><h5 class="modal-title" style="color:#ff6b35"><i class="bi bi-shield-lock me-2"></i>Şifre Değiştir</h5></div>
-      <div class="modal-body">
-        <p class="text-muted small">İlk giriş yapıyorsunuz. Güvenlik için şifrenizi değiştirmeniz zorunludur.</p>
-        <form id="change-password-form">
-          <div class="mb-3"><label class="form-label small">Mevcut Şifre</label><input type="password" class="form-control bg-dark text-light border-secondary" name="current_password" id="current-password" required></div>
-          <div class="mb-3"><label class="form-label small">Yeni Şifre</label><input type="password" class="form-control bg-dark text-light border-secondary" name="new_password" id="new-password" required minlength="6"></div>
-          <div class="mb-3"><label class="form-label small">Yeni Şifre Doğrula</label><input type="password" class="form-control bg-dark text-light border-secondary" name="confirm_password" id="confirm-password" required></div>
-        </form>
+        <!-- Top Channels -->
+        <div class="col-md-6 mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+             <h3 data-i18n="topChannels" class="m-0 border-0">Top Channels</h3>
+             <button id="reset-stats-btn" class="btn btn-sm btn-outline-danger" data-i18n="resetStats">Reset Stats</button>
+          </div>
+          <div class="table-responsive max-h-400-scroll tv-container-border">
+              <table class="table table-striped mb-0 small">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th data-i18n="channelName">Channel</th>
+                    <th data-i18n="streamCount">Viewers</th>
+                    <th data-i18n="lastViewed">Last Viewed</th>
+                  </tr>
+                </thead>
+                <tbody id="top-channels-tbody">
+                   <tr><td colspan="4" class="text-center text-muted" data-i18n="loading">Loading...</td></tr>
+                </tbody>
+              </table>
+          </div>
+        </div>
       </div>
-      <div class="modal-footer" style="border-color:rgba(255,68,68,0.1)"><button class="btn btn-outline-secondary" data-bs-dismiss="modal" data-i18n="cancel">Cancel</button><button class="btn btn-primary" id="change-password-btn" data-i18n="saveChanges">Save Changes</button></div>
-    </div>
+    </div> <!-- End view-statistics -->
+
+    <!-- View: EPG Mapping -->
+    <div id="view-epg-mapping" class="d-none">
+      <h3 data-i18n="configuration" class="mt-4">Configuration</h3>
+
+      <!-- Mode Switcher -->
+      <div class="mb-3 d-none" id="epg-mode-switcher">
+         <div class="btn-group" role="group">
+            <input type="radio" class="btn-check" name="epg-mode" id="epg-mode-provider" value="provider" checked>
+            <label class="btn btn-outline-primary" for="epg-mode-provider" data-i18n="modeProvider">By Provider</label>
+
+            <input type="radio" class="btn-check" name="epg-mode" id="epg-mode-category" value="category">
+            <label class="btn btn-outline-primary" for="epg-mode-category" data-i18n="modeCategory">By Category</label>
+         </div>
+      </div>
+
+      <!-- Provider Controls -->
+      <div id="epg-mapping-provider-container">
+          <div class="row align-items-end mb-4">
+            <div class="col-md-5">
+              <label class="form-label" data-i18n="selectProvider" for="epg-mapping-provider-select">Select Provider</label>
+              <select id="epg-mapping-provider-select" class="form-select">
+                <option value="" data-i18n="selectProviderPlaceholder">-- Select Provider --</option>
+              </select>
+            </div>
+            <div class="col-md-7 text-end">
+               <div class="form-check d-inline-block me-3 d-none" id="only-used-container">
+                   <input class="form-check-input" type="checkbox" id="epg-only-used">
+                   <label class="form-check-label" for="epg-only-used" data-i18n="only_used_channels">Only used channels</label>
+               </div>
+               <div class="form-check d-inline-block d-none" id="all-providers-container">
+                   <input class="form-check-input" type="checkbox" id="epg-all-providers">
+                   <label class="form-check-label" for="epg-all-providers" data-i18n="allProviders">All providers</label>
+               </div>
+            </div>
+          </div>
+      </div>
+
+      <!-- Shared Actions -->
+      <div class="d-flex justify-content-end align-items-center gap-3 mb-4" id="epg-mapping-actions">
+         <button id="auto-map-btn" class="btn btn-warning" disabled><i class="bi bi-lightning-fill" aria-hidden="true"></i> <span data-i18n="autoMap">Auto Map</span></button>
+         <button id="reset-map-btn" class="btn btn-danger d-none" data-i18n="resetMapping">Reset Mapping</button>
+      </div>
+      <div id="epg-mapping-job-container" class="progress mb-4 d-none" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="epg-mapping-job-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 0%">0%</div>
+      </div>
+
+      <!-- Category Controls -->
+      <div id="epg-mapping-category-container" class="d-none">
+          <div class="row align-items-end mb-4">
+            <div class="col-md-4" id="epg-category-user-select-container">
+               <label class="form-label" data-i18n="selectUser" for="epg-mapping-user-select">Select User</label>
+               <select id="epg-mapping-user-select" class="form-select">
+                  <!-- Populated by JS -->
+               </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label" data-i18n="selectCategory" for="epg-mapping-category-select">Select Category</label>
+              <select id="epg-mapping-category-select" class="form-select">
+                <option value="" data-i18n="selectCategoryPlaceholder">-- Select Category --</option>
+              </select>
+            </div>
+          </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-2">
+         <h3 data-i18n="channelMappingList" class="m-0 border-0">Channel List</h3>
+         <div class="input-group input-group-sm w-250px">
+            <input type="text" id="epg-mapping-search" class="form-control" data-i18n-placeholder="searchChannels" data-i18n-label="searchChannels" placeholder="Search channels...">
+            <button class="btn btn-outline-secondary d-none" type="button" id="epg-mapping-search-clear" data-i18n-label="clearSearch" data-i18n-title="clearSearch"><span aria-hidden="true">✕</span></button>
+         </div>
+      </div>
+
+      <div class="table-responsive max-h-600-scroll tv-container-border">
+        <table class="table table-striped table-hover mb-0 sticky-top-header" style="table-layout: fixed; width: 100%;">
+          <thead>
+            <tr>
+              <th class="th-w-5 d-none d-md-table-cell">#</th>
+              <th class="th-w-30" data-i18n="channelName">Channel</th>
+              <th class="th-w-25 d-none d-sm-table-cell" data-i18n="currentEpgId">Current EPG ID</th>
+              <th class="th-w-25" data-i18n="manualMapping">Manual Mapping</th>
+              <th class="th-w-15 text-end" data-i18n="actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="epg-mapping-tbody">
+             <tr><td colspan="5" class="text-center p-4 text-muted" data-i18n="selectProviderFirst">Please select a provider first</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="text-muted small mt-2">
+        <span id="mapping-stats"></span>
+      </div>
+    </div> <!-- End view-epg-mapping -->
+
+  </div>
   </div>
 </div>
 
@@ -291,126 +943,691 @@
   <p class="small text-muted mb-0" style="color:#d1d5db">İlk giriş yaptınız. Lütfen profilden şifrenizi güncelleyin.</p>
 </div>
 
-<script src="vendor/bootstrap.bundle.min.js"></script>
-<script src="i18n.js"></script>
-<script src="app.js"></script>
+<div class="modal fade" id="importCategoryModal" tabindex="-1" aria-hidden="true" aria-labelledby="importCategoryModal-title">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="importCategoryModal-title" class="modal-title" data-i18n="importCategoriesTitle">Import Provider Categories</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 d-flex gap-2 justify-content-center">
+             <div class="form-check">
+               <input class="form-check-input import-type-radio" type="radio" name="import-type" id="import-type-live" value="live" checked>
+               <label class="form-check-label" for="import-type-live" data-i18n="typeLive">Live</label>
+             </div>
+             <div class="form-check">
+               <input class="form-check-input import-type-radio" type="radio" name="import-type" id="import-type-movie" value="movie">
+               <label class="form-check-label" for="import-type-movie" data-i18n="typeMovie">Movies</label>
+             </div>
+             <div class="form-check">
+               <input class="form-check-input import-type-radio" type="radio" name="import-type" id="import-type-series" value="series">
+               <label class="form-check-label" for="import-type-series" data-i18n="typeSeries">Series</label>
+             </div>
+             <div class="form-check">
+               <input class="form-check-input import-type-radio" type="radio" name="import-type" id="import-type-radio" value="radio">
+               <label class="form-check-label" for="import-type-radio" data-i18n="typeRadio">Radio</label>
+             </div>
+          </div>
+          <div class="input-group input-group-sm mb-3">
+             <input type="text" id="category-import-search" class="form-control" data-i18n-placeholder="searchCategories" data-i18n-label="searchCategories" placeholder="Search categories..." />
+             <button class="btn btn-outline-secondary d-none" type="button" id="category-import-search-clear" data-i18n-label="clearSearch" data-i18n-title="clearSearch"><span aria-hidden="true">✕</span></button>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+             <div>
+               <button class="btn btn-sm btn-outline-secondary" id="cat-select-all" data-i18n="selectAll">Select All</button>
+               <button class="btn btn-sm btn-outline-secondary" id="cat-deselect-all" data-i18n="deselectAll">Deselect All</button>
+             </div>
+             <div>
+               <span id="cat-selected-count" class="badge bg-info">0</span>
+             </div>
+          </div>
+          <ul id="provider-categories-list" class="list-group max-h-400-scroll">
+            <li class="list-group-item text-muted" data-i18n="loadingCategories">Loading categories...</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <div class="d-flex gap-2 w-100 justify-content-end">
+             <button type="button" class="btn btn-primary" id="btn-import-selected"><i class="bi bi-box-arrow-in-down" aria-hidden="true"></i> <span data-i18n="importSelected">Import Selected</span></button>
+             <button type="button" class="btn btn-success" id="btn-import-selected-channels"><i class="bi bi-box-arrow-in-down" aria-hidden="true"></i> <span data-i18n="importSelectedWithChannels">Import Selected w/ Channels</span></button>
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync Config Modal -->
+  <div class="modal fade" id="sync-config-modal" tabindex="-1" aria-hidden="true" aria-labelledby="sync-config-modalLabel">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="sync-config-modalLabel" class="modal-title" data-i18n="syncConfig">Sync Configuration</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <form id="sync-config-form">
+          <div class="modal-body">
+            <input type="hidden" id="sync-provider-id" name="provider_id">
+            <input type="hidden" id="sync-user-id" name="user_id">
+            
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="sync-enabled" checked>
+                <label class="form-check-label" for="sync-enabled" data-i18n="enableAutomaticSync">Enable Automatic Sync</label>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="sync-interval" class="form-label" data-i18n="syncInterval">Sync Interval</label>
+              <select class="form-select" id="sync-interval" name="sync_interval">
+                <option value="hourly" data-i18n="hourly">Every Hour</option>
+                <option value="every_6_hours" data-i18n="every_6_hours">Every 6 Hours</option>
+                <option value="every_12_hours" data-i18n="every_12_hours">Every 12 Hours</option>
+                <option value="daily" selected data-i18n="daily">Daily</option>
+                <option value="weekly" data-i18n="weekly">Weekly</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="sync-auto-categories" checked>
+                <label class="form-check-label" for="sync-auto-categories" data-i18n="autoAddNewCategories">
+                  Auto-add new categories
+                </label>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="sync-auto-channels" checked>
+                <label class="form-check-label" for="sync-auto-channels" data-i18n="autoAddChannelsToCategories">
+                  Auto-add channels to categories
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="sync-series-episodes" checked>
+                <label class="form-check-label" for="sync-series-episodes" data-i18n="syncSeriesEpisodes">
+                  Sync series episodes (for M3U playlists)
+                </label>
+              </div>
+            </div>
+
+            <div id="last-sync-info" class="alert alert-info d-none"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+            <button type="submit" class="btn btn-primary" data-i18n="saveConfiguration">Save Configuration</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sync Logs Modal -->
+  <div class="modal fade" id="sync-logs-modal" tabindex="-1" aria-hidden="true" aria-labelledby="sync-logs-modalLabel">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="sync-logs-modalLabel" class="modal-title" data-i18n="syncLogs">Sync Logs</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th data-i18n="time">Time</th>
+                  <th data-i18n="status">Status</th>
+                  <th data-i18n="added">Added</th>
+                  <th data-i18n="updated">Updated</th>
+                  <th data-i18n="categories">Categories</th>
+                  <th data-i18n="error">Error</th>
+                </tr>
+              </thead>
+              <tbody id="sync-logs-tbody">
+                <tr><td colspan="6" class="text-center">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add EPG Source Modal -->
+  <div class="modal fade" id="add-epg-source-modal" tabindex="-1" aria-hidden="true" aria-labelledby="add-epg-source-modalLabel">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="add-epg-source-modalLabel" class="modal-title" data-i18n="addEpgSourceTitle">Add EPG Source</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <form id="add-epg-source-form">
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="epg-source-name" class="form-label" data-i18n="name">Name</label>
+              <input type="text" class="form-control" id="epg-source-name" required>
+            </div>
+            <div class="mb-3">
+              <label for="epg-source-url" class="form-label" data-i18n="url">URL</label>
+              <input type="url" class="form-control" id="epg-source-url" required>
+            </div>
+            <div class="mb-3">
+              <label for="epg-update-interval" class="form-label" data-i18n="updateInterval">Update Interval</label>
+              <select class="form-select" id="epg-update-interval">
+                <option value="3600" data-i18n="interval_1h">1 hour</option>
+                <option value="21600" data-i18n="interval_6h">6 hours</option>
+                <option value="43200" data-i18n="interval_12h">12 hours</option>
+                <option value="86400" selected data-i18n="interval_24h">24 hours</option>
+                <option value="604800" data-i18n="interval_7d">7 days</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="epg-source-enabled" checked>
+                <label class="form-check-label" for="epg-source-enabled" data-i18n="enabled">
+                  Enabled
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+            <button type="submit" class="btn btn-primary" data-i18n="addSource">Add Source</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit EPG Source Modal -->
+  <div class="modal fade" id="edit-epg-source-modal" tabindex="-1" aria-hidden="true" aria-labelledby="edit-epg-source-modalLabel">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="edit-epg-source-modalLabel" class="modal-title" data-i18n="editEpgSourceTitle">Edit EPG Source</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <form id="edit-epg-source-form">
+          <div class="modal-body">
+            <input type="hidden" id="edit-epg-source-id">
+            <div class="mb-3">
+              <label for="edit-epg-source-name" class="form-label" data-i18n="name">Name</label>
+              <input type="text" class="form-control" id="edit-epg-source-name" required>
+            </div>
+            <div class="mb-3">
+              <label for="edit-epg-source-url" class="form-label" data-i18n="url">URL</label>
+              <input type="url" class="form-control" id="edit-epg-source-url" required>
+            </div>
+            <div class="mb-3">
+              <label for="edit-epg-update-interval" class="form-label" data-i18n="updateInterval">Update Interval</label>
+              <select class="form-select" id="edit-epg-update-interval">
+                <option value="3600" data-i18n="interval_1h">1 hour</option>
+                <option value="21600" data-i18n="interval_6h">6 hours</option>
+                <option value="43200" data-i18n="interval_12h">12 hours</option>
+                <option value="86400" data-i18n="interval_24h">24 hours</option>
+                <option value="604800" data-i18n="interval_7d">7 days</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="edit-epg-source-enabled">
+                <label class="form-check-label" for="edit-epg-source-enabled" data-i18n="enabled">
+                  Enabled
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+            <button type="submit" class="btn btn-primary" data-i18n="saveChanges">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Browse EPG Sources Modal -->
+  <div class="modal fade" id="browse-epg-sources-modal" tabindex="-1" aria-hidden="true" aria-labelledby="browse-epg-sources-modalLabel">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="browse-epg-sources-modalLabel" class="modal-title" data-i18n="browseEpgSourcesTitle">Browse Available EPG Sources</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="input-group input-group-sm mb-3">
+             <input type="text" id="epg-browse-search" class="form-control" data-i18n-placeholder="searchEpgSources" data-i18n-label="searchEpgSources" placeholder="Search sources..." aria-label="Search EPG Sources">
+             <button class="btn btn-outline-secondary d-none" type="button" id="epg-browse-search-clear" data-i18n-label="clearSearch" data-i18n-title="clearSearch"><span aria-hidden="true">✕</span></button>
+          </div>
+          <ul id="available-epg-sources-list" class="list-group max-h-400-scroll">
+            <li class="list-group-item text-muted" data-i18n="loading">Loading...</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  
+
+  <!-- OTP Modal -->
+  <div class="modal fade" id="otp-modal" tabindex="-1" aria-labelledby="otp-modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="otp-modalLabel" class="modal-title" data-i18n="setup_2fa">Two-Factor Authentication</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="otp-setup-step-1">
+             <div class="text-center mb-3">
+                <img id="otp-qr-code" src="" alt="QR Code" class="img-fluid d-none qr-code-img">
+                <div id="otp-secret-text" class="mt-2 text-muted small"></div>
+             </div>
+             <p data-i18n="scan_qr">Scan the QR code with your authenticator app (Google Authenticator, Authy, etc.)</p>
+             <div class="input-group mb-3">
+                <input type="text" id="otp-verify-input" class="form-control" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" data-i18n-placeholder="otpPlaceholder" data-i18n-label="otpPlaceholder" placeholder="123456" aria-label="123456" maxlength="6">
+                <button class="btn btn-primary" data-action="action-verify-otp" data-i18n="verify">Verify</button>
+             </div>
+          </div>
+
+          <div id="otp-status-active" class="text-center d-none">
+             <div class="alert alert-success" data-i18n="2fa_enabled">2FA is enabled</div>
+             <button class="btn btn-danger" data-action="action-disable-otp" data-i18n="disable_2fa">Disable 2FA</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div class="modal fade" id="edit-user-modal" tabindex="-1" aria-labelledby="edit-user-modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="edit-user-modalLabel" class="modal-title" data-i18n="editUser">Edit User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <form id="edit-user-form">
+          <div class="modal-body">
+            <input type="hidden" id="edit-user-id">
+            <div class="mb-3">
+              <label class="form-label" data-i18n="username" for="edit-user-username">Username</label>
+              <input type="text" class="form-control" id="edit-user-username" autocomplete="off" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" data-i18n="new_password" for="edit-user-password">New Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="edit-user-password" autocomplete="new-password" data-i18n-placeholder="leaveBlankToKeep" placeholder="Leave blank to keep current">
+                <button class="btn btn-outline-secondary" type="button" data-toggle-password="edit-user-password" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+                <button class="btn btn-outline-secondary" type="button" data-copy-target="edit-user-password" data-i18n-label="copyToClipboardAction" data-i18n-title="copyToClipboardAction"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" data-i18n="maxConnections" for="edit-user-max-connections">Max Connections</label>
+              <input type="number" class="form-control" id="edit-user-max-connections" data-i18n-placeholder="unlimitedConnections" placeholder="0 = Unlimited" min="0">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" data-i18n="expiryDate" for="edit-user-expiry-date">Expiry Date</label>
+              <input type="date" class="form-control" id="edit-user-expiry-date">
+            </div>
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-end">
+                <label class="form-label mb-1" data-i18n="notes" for="edit-user-notes">Notes</label>
+                <small id="edit-user-notes-count" class="text-muted mb-1">0/50</small>
+              </div>
+              <input type="text" class="form-control" id="edit-user-notes" maxlength="50" data-i18n-placeholder="notesMax" placeholder="Max 50 characters" aria-describedby="edit-user-notes-count">
+            </div>
+            <div class="mb-3">
+              <label class="form-label" data-i18n="allowedCountries" for="edit-user-allowed-countries">Allowed Countries (Region Lock)</label>
+              <div id="edit-user-allowed-countries-help" class="small text-muted mb-2" data-i18n="allowedCountriesHelp">Leave empty to allow all countries. Select countries to block access from everywhere else.</div>
+              <select class="form-select" id="edit-user-allowed-countries" multiple size="4" aria-describedby="edit-user-allowed-countries-help">
+                  <!-- Options populated dynamically -->
+              </select>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="edit-user-webui-access">
+              <label class="form-check-label" for="edit-user-webui-access" data-i18n="webui_access">Web UI Access</label>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="edit-user-provider-access">
+              <label class="form-check-label" for="edit-user-provider-access" data-i18n="viewUpstreamProvider">View Upstream Provider</label>
+            </div>
+            <div class="mb-3 form-check">
+              <input type="checkbox" class="form-check-input" id="edit-user-hdhr-enabled">
+              <label class="form-check-label" for="edit-user-hdhr-enabled" data-i18n="enableHDHomeRun">Enable HDHomeRun</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+            <button type="submit" class="btn btn-primary" data-i18n="saveChanges">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div class="modal fade" id="change-password-modal" tabindex="-1" aria-labelledby="change-password-modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="change-password-modalLabel" class="modal-title" data-i18n="change_password">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="change-password-form" >
+            <div class="mb-3">
+              <label for="old-password" class="form-label" data-i18n="old_password">Old Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="old-password" autocomplete="current-password" required>
+                <button class="btn btn-outline-secondary" type="button" data-toggle-password="old-password" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="new-password" class="form-label" data-i18n="new_password">New Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="new-password" autocomplete="new-password" required minlength="8" aria-describedby="new-password-help">
+                <button class="btn btn-outline-secondary" type="button" data-toggle-password="new-password" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+              </div>
+              <small class="form-text text-secondary" data-i18n="password_min_length" id="new-password-help">Minimum 8 characters</small>
+            </div>
+            <div class="mb-3">
+              <label for="confirm-password" class="form-label" data-i18n="confirm_password">Confirm Password</label>
+              <div class="input-group">
+                <input type="password" class="form-control" id="confirm-password" autocomplete="new-password" required minlength="8">
+                <button class="btn btn-outline-secondary" type="button" data-toggle-password="confirm-password" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+              </div>
+            </div>
+            <div id="change-password-error" class="alert alert-danger d-none"></div>
+            <div id="change-password-success" class="alert alert-success d-none"></div>
+            <button type="submit" class="btn btn-primary w-100" id="change-password-btn" data-i18n="change_password">Change Password</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Provider Modal -->
+  <div class="modal fade" id="add-provider-modal" tabindex="-1" aria-labelledby="add-provider-modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="add-provider-modalLabel" class="modal-title" data-i18n="addProvider">Add Provider</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <form id="provider-form">
+          <div class="modal-body">
+             <input type="hidden" name="provider_id" value="">
+             <!-- Hidden user_id, set by JS -->
+             <input type="hidden" name="user_id" value="">
+
+             <div class="row mb-3">
+                <div class="col-md-6">
+                   <label class="form-label" data-i18n="name" for="provider-name">Name</label>
+                   <input class="form-control" name="name" id="provider-name" required>
+                </div>
+                <div class="col-md-6">
+                   <label class="form-label" data-i18n="url" for="provider-url">URL</label>
+                   <input class="form-control" name="url" id="provider-url" placeholder="http://..." required>
+                </div>
+             </div>
+             <div class="row mb-3">
+                <div class="col-md-6">
+                   <label class="form-label" data-i18n="username" for="provider-username">Username</label>
+                   <input class="form-control" name="username" id="provider-username" autocomplete="off" required>
+                </div>
+                <div class="col-md-6">
+                   <label class="form-label" data-i18n="password" for="provider-password">Password</label>
+                   <div class="input-group">
+                     <input class="form-control" name="password" id="provider-password" type="password" autocomplete="new-password" required>
+                     <button class="btn btn-outline-secondary" type="button" data-toggle-password="provider-password" data-i18n-label="show_password" data-i18n-title="show_password"><i class="bi bi-eye" aria-hidden="true"></i></button>
+                   </div>
+                </div>
+             </div>
+             <div class="mb-3">
+                <label class="form-label" data-i18n="epgUrl" for="provider-epg-url">EPG URL</label>
+                <input class="form-control" name="epg_url" id="provider-epg-url" data-i18n-placeholder="optional" placeholder="(Optional)">
+             </div>
+             <div class="mb-3">
+                <label class="form-label" data-i18n="userAgent" for="provider-user-agent">User Agent</label>
+                <input class="form-control" name="user_agent" id="provider-user-agent" data-i18n-placeholder="optional" placeholder="(Optional)">
+             </div>
+             <div class="mb-3">
+                <label class="form-label" data-i18n="providerTimeshiftTimezone" for="provider-timeshift-timezone">Catch-up Timezone (IANA)</label>
+                <input class="form-control" name="timeshift_timezone" id="provider-timeshift-timezone" data-i18n-placeholder="providerTimeshiftTimezonePlaceholder" placeholder="Optional, e.g. Europe/Berlin" autocomplete="off">
+             </div>
+             <div class="mb-3">
+                <label class="form-label" data-i18n="backupUrls" for="provider-backup-urls">Backup URLs</label>
+                <textarea class="form-control" name="backup_urls" id="provider-backup-urls" rows="3" data-i18n-placeholder="backupUrlsPlaceholder" placeholder="One URL per line (Optional)"></textarea>
+             </div>
+             <div class="row mb-3">
+                <div class="col-md-6">
+                   <label class="form-label" data-i18n="maxConnections" for="provider-max-connections">Max Connections</label>
+                   <input type="number" class="form-control" name="max_connections" id="provider-max-connections" data-i18n-placeholder="unlimitedConnections" placeholder="0 = Unlimited" min="0">
+                </div>
+                <div class="col-md-6">
+                   <label class="form-label" data-i18n="expiryDate" for="provider-expiry-date">Expiry Date</label>
+                   <input class="form-control" id="provider-expiry-date" readonly disabled>
+                </div>
+             </div>
+             <div class="row">
+                <div class="col-md-6">
+                   <div class="form-check mt-4">
+                      <input class="form-check-input" type="checkbox" name="epg_enabled" id="prov-epg-enabled" checked>
+                      <label class="form-check-label" for="prov-epg-enabled" data-i18n="enableEpg">Enable EPG</label>
+                   </div>
+                   <div class="form-check mt-2">
+                      <input class="form-check-input" type="checkbox" name="use_mapped_epg_icon" id="prov-use-mapped-epg-icon">
+                      <label class="form-check-label" for="prov-use-mapped-epg-icon" data-i18n="useMappedEpgIcon">Use Mapped EPG Icon</label>
+                   </div>
+                </div>
+                <div class="col-md-6">
+                   <label class="form-label" data-i18n="updateInterval" for="provider-epg-update-interval">Update Interval</label>
+                   <select class="form-select" name="epg_update_interval" id="provider-epg-update-interval">
+                        <option value="3600">1h</option>
+                        <option value="21600">6h</option>
+                        <option value="43200">12h</option>
+                        <option value="86400" selected>24h</option>
+                   </select>
+                </div>
+             </div>
+          </div>
+          <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+             <button type="submit" class="btn btn-primary" id="save-provider-btn" data-i18n="save">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Share Modal -->
+  <div class="modal fade" id="share-modal" tabindex="-1" aria-hidden="true" aria-labelledby="share-modalLabel">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="share-modalLabel" class="modal-title" data-i18n="createShareLink">Create Share Link</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="share-form">
+             <div class="mb-3">
+               <label class="form-label" data-i18n="shareName" for="share-name">Name</label>
+               <input class="form-control" id="share-name" data-i18n-placeholder="shareNamePlaceholder" placeholder="e.g. Guest Access" required>
+             </div>
+             <div class="row mb-3">
+               <div class="col-6">
+                 <label class="form-label" data-i18n="startTime" for="share-start-time">Start Time</label>
+                 <input type="datetime-local" class="form-control" id="share-start-time" aria-describedby="share-start-time-help">
+                 <div class="form-text small" data-i18n="leaveEmptyForNow" id="share-start-time-help">Leave empty for now</div>
+               </div>
+               <div class="col-6">
+                 <label class="form-label" data-i18n="endTime" for="share-end-time">End Time</label>
+                 <input type="datetime-local" class="form-control" id="share-end-time" aria-describedby="share-end-time-help">
+                 <div class="form-text small" data-i18n="leaveEmptyForNever" id="share-end-time-help">Leave empty for never</div>
+               </div>
+             </div>
+             <div class="mb-3">
+               <label class="form-label" data-i18n="selectedChannels" for="share-channel-count">Selected Channels</label>
+               <div class="form-control" id="share-channel-count" readonly>0 channels</div>
+             </div>
+
+             <div id="share-result" class="d-none">
+                <label class="form-label fw-bold text-success" data-i18n="shareLinkCreated" for="share-link-output">Share Link Created:</label>
+                <div class="input-group">
+                   <input class="form-control" id="share-link-output" readonly>
+                   <button class="btn btn-outline-secondary" type="button" data-copy-target="share-link-output" data-i18n-label="copyToClipboardAction" data-i18n-title="copyToClipboardAction"><i class="bi bi-clipboard" aria-hidden="true"></i></button>
+                </div>
+             </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-warning me-auto d-none" id="cancel-share-edit-btn" data-i18n="cancel">Cancel</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+          <button type="button" class="btn btn-primary" id="create-share-btn" data-i18n="createLink">Create Link</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shares List Modal -->
+  <div class="modal fade" id="shares-list-modal" tabindex="-1" aria-hidden="true" aria-labelledby="shares-list-modalLabel">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="shares-list-modalLabel" class="modal-title" data-i18n="activeShares">Active Shares</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <div class="modal-body">
+           <div class="table-responsive">
+              <table class="table table-sm table-striped">
+                 <thead>
+                    <tr>
+                       <th data-i18n="name">Name</th>
+                       <th data-i18n="channels">Channels</th>
+                       <th data-i18n="validity">Validity</th>
+                       <th data-i18n="link">Link</th>
+                       <th></th>
+                    </tr>
+                 </thead>
+                 <tbody id="shares-list-tbody">
+                    <tr><td colspan="5" class="text-center text-muted" data-i18n="loading">Loading...</td></tr>
+                 </tbody>
+              </table>
+           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+      </div><!-- flex-grow-1 -->
+  </div><!-- app-shell -->
+
+  <!-- EPG Channel Select Modal -->
+  <div class="modal fade" id="epg-select-modal" tabindex="-1" aria-hidden="true" aria-labelledby="epg-select-modalLabel">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 id="epg-select-modalLabel" class="modal-title" data-i18n="selectEpgChannel">Select EPG Channel</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" data-i18n-label="close" data-i18n-title="close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="epg-suggest-container" class="mb-4 d-none">
+             <h6 class="border-bottom pb-2 mb-2" data-i18n="suggestions">Suggestions</h6>
+             <ul id="epg-suggest-list" class="list-group max-h-300-scroll mb-3"></ul>
+          </div>
+          <h6 class="border-bottom pb-2 mb-2" data-i18n="allChannels">All Channels</h6>
+          <div class="input-group input-group-sm mb-3">
+             <input type="text" id="epg-select-search" class="form-control" data-i18n-placeholder="searchChannels" data-i18n-label="searchChannels" placeholder="Search EPG channels...">
+             <button class="btn btn-outline-secondary d-none" type="button" id="epg-select-search-clear" data-i18n-label="clearSearch" data-i18n-title="clearSearch"><span aria-hidden="true">✕</span></button>
+          </div>
+          <ul id="epg-select-list" class="list-group max-h-400-scroll">
+             <li class="list-group-item text-center text-muted">Loading...</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sidebar sync + show when logged in
+    setInterval(()=>{
+      const nb=document.getElementById('main-navbar');
+      const sb=document.getElementById('sidebar');
+      if(nb && sb){
+        if(!nb.classList.contains('d-none')){ sb.classList.remove('d-none'); sb.classList.add('d-flex'); nb.classList.add('d-none'); }
+        else { /* login ekranında sidebar gizli kalsın */ }
+        const a=document.getElementById('language-selector'), b=document.getElementById('language-selector-side');
+        if(a&&b&&a.value!==b.value) b.value=a.value;
+      }
+    },500);
+    // sidebar nav active sync
+    document.addEventListener('click',e=>{
+      const t=e.target.closest('[data-view]'); if(!t) return;
+      document.querySelectorAll('#sidebar .nav-link').forEach(a=>a.classList.remove('active'));
+      const s=document.getElementById(t.id+'-side')||document.querySelector(`#sidebar [data-view="${t.getAttribute('data-view')}"]`);
+      if(s) s.classList.add('active');
+    });
+  </script>
+  <script src="vendor/bootstrap.bundle.min.js"></script>
+  <script src="vendor/sortable.min.js"></script>
+  <script src="i18n.js"></script>
+  <script src="ai-i18n.js"></script>
+  <script src="app.js"></script>
 <script>
-// === LOGIN LOGIC ===
-const loginForm = document.getElementById('login-form');
-const loginBtn = document.getElementById('login-btn');
-const loginError = document.getElementById('login-error');
-
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value;
-  const remember = document.getElementById('remember-me').checked;
-
-  loginBtn.disabled = true;
-  loginBtn.querySelector('.login-btn-text').classList.add('d-none');
-  loginBtn.querySelector('.login-spinner').classList.remove('d-none');
-  loginError.classList.add('d-none');
-
-  try {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    const data = await res.json();
-
-    if (res.ok && data.token) {
-      // Remember me
-      if (remember) {
-        localStorage.setItem('xtream_remember', '1');
-        localStorage.setItem('xtream_user', username);
-      } else {
-        localStorage.removeItem('xtream_remember');
-        localStorage.removeItem('xtream_user');
-      }
-      localStorage.setItem('jwt_token', data.token);
-      localStorage.removeItem('jwt_token');
-
-      // Check if force password change
-      if (data.user && data.user.force_password_change) {
-        setTimeout(() => {
-          document.getElementById('app-shell').style.display = '';
-          switchView('dashboard');
-          var modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('passwordChangeModal')); modal.show();;
-        }, 500);
-        return;
-      }
-
-      setTimeout(() => {
-        document.getElementById('app-shell').style.display = '';
-        switchView('dashboard');
-      }, 500);
-    } else {
-      loginError.textContent = data.error === 'missing_credentials' ? 'Kullanıcı adı ve şifre boş bırakılamaz.' : data.error === 'invalid_input_type' ? 'Geçersiz giriş formatı.' : 'Giriş başarısız. Tekrar deneyin.';
-      loginError.classList.remove('d-none');
-    }
-  } catch (err) {
-    loginError.textContent = 'Bağlantı hatası. Tekrar deneyin.';
-    loginError.classList.remove('d-none');
-  } finally {
-    loginBtn.disabled = false;
-    loginBtn.querySelector('.login-btn-text').classList.remove('d-none');
-    loginBtn.querySelector('.login-spinner').classList.add('d-none');
+// splash: CSS animation hides it; remove node shortly after
+setTimeout(function(){ var s=document.getElementById('splash'); if(s){ s.style.opacity='0'; setTimeout(function(){ if(s) s.remove(); }, 900); } }, 2600);
+// app.js compatibility: login is a full page here, not a Bootstrap modal (look unchanged)
+window.showLoginModal = function(){
+  var l=document.getElementById('login-modal'); if(l) l.classList.remove('d-none');
+  var sh=document.getElementById('app-shell'); if(sh){ sh.classList.add('d-none'); sh.classList.remove('d-flex'); }
+  var nb=document.getElementById('main-navbar'); if(nb) nb.classList.add('d-none');
+  var mc=document.getElementById('main-content'); if(mc) mc.classList.add('d-none');
+};
+window.hideLoginModal = function(){
+  var l=document.getElementById('login-modal'); if(l) l.classList.add('d-none');
+  var sh=document.getElementById('app-shell'); if(sh){ sh.classList.remove('d-none'); sh.classList.add('d-flex'); }
+};
+document.addEventListener('DOMContentLoaded', function(){
+  if (typeof window.switchView === 'function') {
+    var _sw = window.switchView;
+    window.switchView = function(v){
+      _sw(v);
+      document.querySelectorAll('#sidebar .nav-link[data-view]').forEach(function(a){
+        var on = a.getAttribute('data-view')===v;
+        a.classList.toggle('active', on);
+        a.style.color = on ? '#ff6b35' : '#9ca3af';
+      });
+    };
+  }
+  var side=document.getElementById('language-selector-side'), main=document.getElementById('language-selector');
+  if(side && main){
+    side.addEventListener('change', function(){ main.value=side.value; main.dispatchEvent(new Event('change')); });
+    main.addEventListener('change', function(){ var o=side.querySelector('option[value="' + main.value + '"]'); if(o) side.value=main.value; });
   }
 });
-
-// Password change modal
-document.getElementById('change-password-btn').addEventListener('click', async () => {
-  const current = document.getElementById('current-password').value;
-  const newPwd = document.getElementById('new-password').value;
-  const confirm = document.getElementById('confirm-password').value;
-
-  if (newPwd !== confirm) { alert('Şifreler eşleşmiyor'); return; }
-  if (newPwd.length < 6) { alert('Şifre en az 6 karakter olmalı'); return; }
-
-  const token = localStorage.getItem('jwt_token');
-  try {
-    const res = await fetch('/api/change-password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ current_password: current, new_password: newPwd })
-    });
-    if (res.ok) {
-      var modal = bootstrap.Modal.getInstance(document.getElementById('passwordChangeModal')); if(modal) modal.hide();;
-      document.getElementById('forcePwdToast').classList.add('d-none');
-    } else {
-      alert('Şifre değiştirilemedi. Mevcut şifrenizi kontrol edin.');
-    }
-  } catch (e) { alert('Hata occurred'); }
-});
-
-// Check if already logged in
-(async function() {
-  const token = localStorage.getItem('jwt_token');
-  const hasSession = !!token;
-  const duration = hasSession ? 3500 : 2500;
-
-  await new Promise(r => setTimeout(r, duration));
-  const splash = document.getElementById('splash');
-  if (splash) { splash.style.opacity = '0'; setTimeout(() => splash.remove(), 800); }
-
-  if (hasSession) {
-    // Verify token
-    try {
-      const res = await fetch('/api/verify-token', { headers: { 'Authorization': `Bearer ${token}` } });
-      if (res.ok) {
-        document.getElementById('login-modal').classList.add('d-none');
-        document.getElementById('app-shell').style.display = '';
-        switchView('dashboard');
-      } else {
-        localStorage.removeItem('jwt_token');
-        document.getElementById('login-modal').classList.remove('d-none');
-      }
-    } catch { document.getElementById('login-modal').classList.remove('d-none'); }
-  } else {
-    document.getElementById('login-modal').classList.remove('d-none');
-  }
-})();
 </script>
+  <script src="ai.js"></script>
+
+  <!-- Toast Container -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3 z-1100" id="toast-container"></div>
 </body>
 </html>
