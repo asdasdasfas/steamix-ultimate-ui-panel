@@ -735,7 +735,8 @@ const translations = {
     "preset_3h": "3 Hours",
     "preset_12h": "12 Hours",
     "preset_24h": "24 Hours",
-    "preset_7d": "7 Days"
+    "preset_7d": "7 Days",
+    "apply_custom": "Apply"
   },
   "tr": {
     "title": "Steamix TV ULTIMATE",
@@ -1469,7 +1470,8 @@ const translations = {
     "preset_3h": "3 Saat",
     "preset_12h": "12 Saat",
     "preset_24h": "24 Saat",
-    "preset_7d": "7 Gün"
+    "preset_7d": "7 Gün",
+    "apply_custom": "Uygula"
   },
   "de": {
     "casting": "Wiedergabe auf externem Gerät",
@@ -2203,7 +2205,8 @@ const translations = {
     "preset_3h": "3 Stunden",
     "preset_12h": "12 Stunden",
     "preset_24h": "24 Stunden",
-    "preset_7d": "7 Tage"
+    "preset_7d": "7 Tage",
+    "apply_custom": "Übernehmen"
   },
   "fr": {
     "casting": "Diffusion sur un appareil externe",
@@ -2937,7 +2940,8 @@ const translations = {
     "preset_3h": "3 heures",
     "preset_12h": "12 heures",
     "preset_24h": "24 heures",
-    "preset_7d": "7 jours"
+    "preset_7d": "7 jours",
+    "apply_custom": "Appliquer"
   },
   "el": {
     "casting": "Μετάδοση σε εξωτερική συσκευή",
@@ -3671,7 +3675,8 @@ const translations = {
     "preset_3h": "3 ώρες",
     "preset_12h": "12 ώρες",
     "preset_24h": "24 ώρες",
-    "preset_7d": "7 ημέρες"
+    "preset_7d": "7 ημέρες",
+    "apply_custom": "Εφαρμογή"
   }
 };
 

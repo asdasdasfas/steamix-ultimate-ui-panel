@@ -3517,6 +3517,19 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   });
 
+  // Custom trial duration: manual hours + minutes -> expiry
+  const customApply = document.getElementById('expiry-custom-apply');
+  if (customApply) {
+      customApply.addEventListener('click', () => {
+          const h = Math.max(0, Number(document.getElementById('expiry-custom-hours').value || 0));
+          const min = Math.max(0, Number(document.getElementById('expiry-custom-minutes').value || 0));
+          const input = document.getElementById('edit-user-expiry-date');
+          if (input && Number.isFinite(h) && Number.isFinite(min) && (h > 0 || min > 0)) {
+              input.value = formatLocalDateTime(new Date(Date.now() + (h * 60 + min) * 60000));
+          }
+      });
+  }
+
   // Check authentication on page load
   checkAuthentication();
 
