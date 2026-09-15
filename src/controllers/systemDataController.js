@@ -31,6 +31,11 @@ export const exportData = (req, res) => {
       version: 2,
       assignment_provenance_version: 1,
       timestamp: Date.now(),
+      // User/provider passwords below are stored DECRYPTED (plaintext). The
+      // whole file is already encrypted with the export password, and import
+      // re-encrypts them with the current server key. This keeps M3U links
+      // working after a restore even when the server key changed.
+      passwords_plaintext: true,
       users: [],
       providers: [],
       categories: [],
@@ -48,7 +53,10 @@ export const exportData = (req, res) => {
       usersToExport = db.prepare('SELECT * FROM users').all();
     }
 
-    exportData.users = usersToExport;
+    exportData.users = usersToExport.map(u => ({
+      ...u,
+      plain_password: u.plain_password ? (decrypt(u.plain_password) || null) : null
+    }));
 
     if (usersToExport.length > 0) {
        const userIds = usersToExport.map(u => u.id);
@@ -276,9 +284,14 @@ export const importData = async (req, res) => {
 
       // ⚡ Bolt: Hoist prepared statements to prevent query recompilation inside loops
       const insertUserStmt = db.prepare(`
-        INSERT INTO users (username, password, is_active, webui_access, provider_access, hdhr_enabled, hdhr_token, otp_enabled, otp_secret, max_connections, expiry_date, allowed_countries, notes)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (username, password, plain_password, is_active, webui_access, provider_access, hdhr_enabled, hdhr_token, otp_enabled, otp_secret, max_connections, expiry_date, allowed_countries, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
+
+      // New backups (passwords_plaintext) carry DECRYPTED passwords: re-encrypt
+      // with the current key. Legacy backups carry key-encrypted blobs: keep
+      // them only if this server can still decrypt them.
+      const plaintextPasswords = importData.passwords_plaintext === true;
 
       for (const user of importData.users) {
         const existingId = existingUserMap.get(user.username);
@@ -302,9 +315,17 @@ export const importData = async (req, res) => {
         const otpSecret = user.otp_secret || null;
         const isActive = user.is_active !== undefined ? (user.is_active ? 1 : 0) : 1;
 
+        let storedPlainPassword = null;
+        if (plaintextPasswords) {
+          storedPlainPassword = user.plain_password ? encrypt(user.plain_password) : null;
+        } else if (user.plain_password) {
+          storedPlainPassword = decrypt(user.plain_password) ? user.plain_password : null;
+        }
+
         const info = insertUserStmt.run(
           user.username,
           user.password,
+          storedPlainPassword,
           isActive,
           webuiAccess,
           providerAccess,

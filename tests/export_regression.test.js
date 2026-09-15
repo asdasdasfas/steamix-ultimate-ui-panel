@@ -439,4 +439,58 @@ describe('Export/Import Regression Tests', () => {
             custom_name: 'Imported name', is_hidden: 1
         });
     });
+
+    it('preserves user plain passwords across export/import roundtrip', async () => {
+        db.prepare('PRAGMA foreign_keys = OFF').run();
+        for (const table of ['user_channels', 'category_mappings', 'sync_configs', 'provider_channels', 'providers', 'user_categories', 'users']) {
+            db.prepare(`DELETE FROM ${table}`).run();
+        }
+        db.prepare('PRAGMA foreign_keys = ON').run();
+
+        db.prepare(`INSERT INTO users (username, password, plain_password) VALUES (?, ?, ?)`)
+            .run('testuser_linkpw', 'hashedpass', encrypt('linksecret123'));
+
+        let exportedBuffer;
+        systemController.exportData(
+            { user: { is_admin: true }, body: { password: TEST_EXPORT_PASSWORD, user_id: 'all' }, query: {} },
+            { setHeader: vi.fn(), status: vi.fn().mockReturnThis(), json: vi.fn(), send: vi.fn(buffer => { exportedBuffer = buffer; }) }
+        );
+        const exportedData = JSON.parse(zlib.gunzipSync(decryptWithPassword(exportedBuffer, TEST_EXPORT_PASSWORD)).toString('utf8'));
+        expect(exportedData.passwords_plaintext).toBe(true);
+        expect(exportedData.users.find(u => u.username === 'testuser_linkpw').plain_password).toBe('linksecret123');
+
+        db.prepare('DELETE FROM users').run();
+        fs.writeFileSync(tempFilePath, exportedBuffer);
+        const resImport = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+        await systemController.importData(
+            { user: { is_admin: true }, body: { password: TEST_EXPORT_PASSWORD }, file: { path: tempFilePath } },
+            resImport
+        );
+        expect(resImport.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        const restored = db.prepare('SELECT plain_password FROM users WHERE username = ?').get('testuser_linkpw');
+        expect(decrypt(restored.plain_password)).toBe('linksecret123');
+    });
+
+    it('drops unrecoverable legacy password blobs instead of breaking links silently', async () => {
+        db.prepare('DELETE FROM users').run();
+        // Legacy backup without the plaintext flag: one same-key blob, one dead value
+        const data = {
+            version: 2,
+            users: [
+                { id: 1, username: 'legacy_ok', password: 'pass', plain_password: encrypt('oldsecret') },
+                { id: 2, username: 'legacy_dead', password: 'pass', plain_password: 'not-a-valid-blob' }
+            ]
+        };
+        fs.writeFileSync(tempFilePath, encryptWithPassword(zlib.gzipSync(JSON.stringify(data)), TEST_EXPORT_PASSWORD));
+        const resImport = { status: vi.fn().mockReturnThis(), json: vi.fn() };
+        await systemController.importData(
+            { user: { is_admin: true }, body: { password: TEST_EXPORT_PASSWORD }, file: { path: tempFilePath } },
+            resImport
+        );
+        expect(resImport.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+        const okRow = db.prepare('SELECT plain_password FROM users WHERE username = ?').get('legacy_ok');
+        expect(decrypt(okRow.plain_password)).toBe('oldsecret');
+        const deadRow = db.prepare('SELECT plain_password FROM users WHERE username = ?').get('legacy_dead');
+        expect(deadRow.plain_password).toBeNull();
+    });
 });
