@@ -1,0 +1,36 @@
+name: Auto Backup
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # her saat
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Export from panel
+        env:
+          PANEL_URL: ${{ secrets.PANEL_URL }}
+          ADMIN_USER: ${{ secrets.ADMIN_USER }}
+          ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+          EXPORT_PASS: ${{ secrets.EXPORT_PASS }}
+        run: |
+          set -e
+          echo "Login..."
+          TOKEN=$(curl -s -X POST "$PANEL_URL/api/login" -H "Content-Type: application/json" -d "{\"username\":\"$ADMIN_USER\",\"password\":\"$ADMIN_PASS\"}" | jq -r .token)
+          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then echo "Login failed"; exit 1; fi
+          echo "Export..."
+          mkdir -p backups
+          curl -s -X POST "$PANEL_URL/api/export" -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" -d "{\"password\":\"$EXPORT_PASS\"}" -o backups/backup-$(date +%Y%m%d-%H%M).bin
+          ls -lh backups/
+      - name: Commit backup
+        run: |
+          git config user.name "backup-bot"
+          git config user.email "backup@steamix.local"
+          git add backups/
+          git diff --cached --quiet || git commit -m "auto backup $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push || echo "no changes"
