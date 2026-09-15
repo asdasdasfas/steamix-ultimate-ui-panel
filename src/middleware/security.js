@@ -104,6 +104,28 @@ export const securityHeaders = helmet({
 });
 
 export const ipBlocker = async (req, res, next) => {
-  // Render free proxy IP hatası için geçici devre dışı - sadece Electron IP kilit kullanılacak
-  return next();
+  const ip = req.ip;
+  const now = Math.floor(Date.now() / 1000);
+
+  try {
+    // 1. Check Whitelist
+    const whitelisted = db.prepare('SELECT id FROM whitelisted_ips WHERE ip = ?').get(ip);
+    if (whitelisted) return next();
+
+    // 2. Check Blocklist
+    const blocked = db.prepare('SELECT * FROM blocked_ips WHERE ip = ?').get(ip);
+    if (blocked) {
+      if (blocked.expires_at > now) {
+        console.warn(`⛔ IP Blocked: ${ip} (Reason: ${blocked.reason})`);
+        return res.status(403).json({ error: 'Access Denied', message: 'Your IP is blocked' });
+      } else {
+        // Expired, remove it
+        db.prepare('DELETE FROM blocked_ips WHERE id = ?').run(blocked.id);
+        db.prepare('INSERT INTO security_logs (ip, action, details, timestamp) VALUES (?, ?, ?, ?)').run(ip, 'ip_unblocked', 'Block expired', now);
+      }
+    }
+  } catch (e) {
+    console.error('IP Check Error:', e);
+  }
+  next();
 };
