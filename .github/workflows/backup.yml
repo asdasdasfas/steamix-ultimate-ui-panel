@@ -2,7 +2,7 @@ name: Auto Backup
 
 on:
   schedule:
-    - cron: '*/15 * * * *'  # her 15 dk
+    - cron: '*/3 * * * *'  # TEST: her 3 dk (sonra 15'e alinacak)
   workflow_dispatch:
 
 permissions:
