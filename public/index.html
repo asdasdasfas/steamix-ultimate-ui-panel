@@ -158,8 +158,8 @@
 <div class="d-none" id="app-shell" style="min-height:100vh;display:none">
   <!-- Sidebar -->
   <nav id="sidebar" class="d-flex flex-column p-3" style="width:255px;background:rgba(10,10,15,0.95);border-right:1px solid rgba(255,68,68,0.1);backdrop-filter:blur(12px);position:sticky;top:0;height:100vh;overflow:auto;z-index:10">
-    <a class="d-flex align-items-center gap-2 mb-4 text-decoration-none" href="#">
-      <svg width="32" height="32" viewBox="0 0 280 80"><defs><linearGradient id="sidebarXc" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#ff4444"/><stop offset="50%" style="stop-color:#ff6b35"/><stop offset="100%" style="stop-color:#ff4444"/></linearGradient></defs><text x="30" y="50" text-anchor="middle" font-family="Arial Black" font-size="32" font-weight="900" fill="url(#sidebarXc)">XC</text><text x="64" y="30" font-family="Arial Black" font-size="22" font-weight="900" fill="#fff" letter-spacing="2">Xtream</text><text x="64" y="52" font-family="Arial Black" font-size="15" font-weight="700" fill="url(#sidebarXc)" letter-spacing="2">CODES</text></svg>
+    <a class="d-flex align-items-center justify-content-center gap-2 mb-4 text-decoration-none" href="#">
+      <svg width="190" height="54" viewBox="0 0 280 80" style="filter:drop-shadow(0 0 14px rgba(255,68,68,0.5))"><defs><linearGradient id="sidebarXc" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#ff4444"/><stop offset="50%" style="stop-color:#ff6b35"/><stop offset="100%" style="stop-color:#ff4444"/></linearGradient></defs><text x="30" y="50" text-anchor="middle" font-family="Arial Black" font-size="32" font-weight="900" fill="url(#sidebarXc)">XC</text><text x="64" y="30" font-family="Arial Black" font-size="22" font-weight="900" fill="#fff" letter-spacing="2">Xtream</text><text x="64" y="52" font-family="Arial Black" font-size="15" font-weight="700" fill="url(#sidebarXc)" letter-spacing="2">CODES</text></svg>
     </a>
     <div class="small text-muted mb-2" style="letter-spacing:0.14em;color:#ff6b35" data-i18n="menu">MENÜ</div>
     <a class="nav-link active" href="#" data-view="dashboard" id="nav-dashboard-side" style="color:#ff6b35"><i class="bi bi-speedometer2 me-2"></i><span data-i18n="dashboard">Panel</span></a>
@@ -642,6 +642,7 @@
                <!-- <input type="hidden" name="ip_block_duration" id="setting-block-duration"> -->
 
                <button class="btn btn-primary" type="submit" data-i18n="saveSettings">Save Settings</button>
+               <div class="alert alert-info py-2 px-3 small mt-3 mb-0" data-i18n="help_block_settings">Eşik: üst üste kaç hatalı denemeden sonra otomatik engelleme yapılır. Süre: engelin kaç saniye süreceği. Değişiklikten sonra Kaydet'e basın.</div>
             </form>
          </div>
       </div>
@@ -663,6 +664,7 @@
                </div>
                <div class="col-4 col-sm-6 col-md-auto"><button class="btn btn-sm btn-danger w-100" data-i18n="block">Block</button></div>
             </form>
+            <div class="alert alert-info py-2 px-3 small mb-2" data-i18n="help_block_ip">Engellemek istediğiniz IP'yi yazıp sebep ekleyin, süre seçin ve Engelle'ye basın. Süre dolunca engel kendiliğinden kalkar; listeden hemen de kaldırabilirsiniz. Şüpheli adresleri aşağıdaki Güvenlik Kayıtları'nda görürsünüz.</div>
             <ul id="blocked-ip-list" class="list-group small max-h-200-scroll"></ul>
          </div>
          <div class="col-md-6">
@@ -672,6 +674,7 @@
                <div class="col-12 col-sm-8 col-md"><input class="form-control form-control-sm" name="description" data-i18n-placeholder="reasonPlaceholder" data-i18n-label="whitelistReason" placeholder="Reason"></div>
                <div class="col-12 col-sm-12 col-md-auto"><button class="btn btn-sm btn-success w-100" data-i18n="whitelist">Whitelist</button></div>
             </form>
+            <div class="alert alert-info py-2 px-3 small mb-2" data-i18n="help_whitelist_ip">Buraya eklediğiniz adresler hatalı giriş yapsa bile asla engellenmez. Kendinizi dışarıda bırakmamak için önce kendi IP adresinizi buraya ekleyin.</div>
             <ul id="whitelisted-ip-list" class="list-group small max-h-200-scroll"></ul>
          </div>
       </div>

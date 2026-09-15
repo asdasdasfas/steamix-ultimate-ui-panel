@@ -727,7 +727,10 @@ const translations = {
     "hero_slogan": "Command your entire stream network from one panel",
     "status_online": "System Online",
     "hero_sub": "Manage thousands of channels, create users, control streams and track statistics from one place.",
-    "live_match": "LIVE MATCH"
+    "live_match": "LIVE MATCH",
+    "help_block_ip": "Type the IP to block, add a reason, pick a duration and press Block. The block lifts itself when time runs out; you can also lift it anytime from the list below. Suspicious addresses appear in Security Logs further down.",
+    "help_whitelist_ip": "Addresses added here are never blocked, even after failed logins. Add your own IP first so you never lock yourself out.",
+    "help_block_settings": "Threshold: after how many consecutive failed attempts auto-block kicks in. Duration: how long the block lasts in seconds. Press Save after changes."
   },
   "tr": {
     "title": "Steamix TV ULTIMATE",
@@ -1453,7 +1456,10 @@ const translations = {
     "hero_slogan": "Tüm yayın ağını tek panelden yönet",
     "status_online": "Sistem Çevrimiçi",
     "hero_sub": "Binlerce kanalı tek panelden yönetin. Kullanıcı oluşturun, akışları kontrol edin, istatistikleri takip edin.",
-    "live_match": "CANLI MAÇ"
+    "live_match": "CANLI MAÇ",
+    "help_block_ip": "Engellemek istediğiniz IP’yi yazıp sebep ekleyin, süre seçin ve Engelle’ye basın. Süre dolunca engel kendiliğinden kalkar; listeden hemen de kaldırabilirsiniz. Şüpheli adresleri aşağıdaki Güvenlik Kayıtları’nda görürsünüz.",
+    "help_whitelist_ip": "Buraya eklediğiniz adresler hatalı giriş yapsa bile asla engellenmez. Kendinizi dışarıda bırakmamak için önce kendi IP adresinizi buraya ekleyin.",
+    "help_block_settings": "Eşik: üst üste kaç hatalı denemeden sonra otomatik engelleme yapılır. Süre: engelin kaç saniye süreceği. Değişiklikten sonra Kaydet’e basın."
   },
   "de": {
     "casting": "Wiedergabe auf externem Gerät",
@@ -2179,7 +2185,10 @@ const translations = {
     "hero_slogan": "Steuere dein gesamtes Stream-Netzwerk über ein Panel",
     "status_online": "System online",
     "hero_sub": "Verwalte tausende Sender, erstelle Benutzer, steuere Streams und verfolge Statistiken an einem Ort.",
-    "live_match": "LIVE-SPIEL"
+    "live_match": "LIVE-SPIEL",
+    "help_block_ip": "Gib die zu sperrende IP ein, füge einen Grund hinzu, wähle eine Dauer und drücke Sperren. Die Sperre endet automatisch; du kannst sie unten auch sofort aufheben. Verdächtige Adressen stehen weiter unten in den Sicherheitsprotokollen.",
+    "help_whitelist_ip": "Adressen hier werden nie gesperrt, auch nicht nach Fehlversuchen. Trage zuerst deine eigene IP ein, damit du dich nicht aussperrst.",
+    "help_block_settings": "Schwelle: nach wie vielen Fehlversuchen automatisch gesperrt wird. Dauer: wie lange die Sperre in Sekunden gilt. Nach Änderungen speichern."
   },
   "fr": {
     "casting": "Diffusion sur un appareil externe",
@@ -2905,7 +2914,10 @@ const translations = {
     "hero_slogan": "Pilotez tout votre réseau de diffusion depuis un seul panneau",
     "status_online": "Système en ligne",
     "hero_sub": "Gérez des milliers de chaînes, créez des utilisateurs, contrôlez les flux et suivez les statistiques depuis un seul endroit.",
-    "live_match": "MATCH EN DIRECT"
+    "live_match": "MATCH EN DIRECT",
+    "help_block_ip": "Saisissez l’IP à bloquer, ajoutez un motif, choisissez une durée et appuyez sur Bloquer. Le blocage expire tout seul ; vous pouvez aussi le lever depuis la liste ci-dessous. Les adresses suspectes figurent dans les journaux de sécurité plus bas.",
+    "help_whitelist_ip": "Les adresses ajoutées ici ne sont jamais bloquées, même après des échecs. Ajoutez d’abord votre propre IP pour ne pas vous exclure.",
+    "help_block_settings": "Seuil : nombre d’échecs consécutifs avant blocage automatique. Durée : durée du blocage en secondes. Enregistrez après modification."
   },
   "el": {
     "casting": "Μετάδοση σε εξωτερική συσκευή",
@@ -3631,7 +3643,10 @@ const translations = {
     "hero_slogan": "Διαχειρίσου όλο το δίκτυο streaming από ένα πάνελ",
     "status_online": "Το σύστημα είναι online",
     "hero_sub": "Διαχειρίσου χιλιάδες κανάλια, δημιούργησε χρήστες, έλεγξε τα streams και παρακολούθησε στατιστικά από ένα σημείο.",
-    "live_match": "ΖΩΝΤΑΝΟΣ ΑΓΩΝΑΣ"
+    "live_match": "ΖΩΝΤΑΝΟΣ ΑΓΩΝΑΣ",
+    "help_block_ip": "Γράψε το IP που θες να μπλοκάρεις, πρόσθεσε αιτία, διάλεξε διάρκεια και πάτα Αποκλεισμό. Ο αποκλεισμός λήγει μόνος του· μπορείς να τον άρεις και από τη λίστα. Ύποπτες διευθύνσεις φαίνονται στα αρχεία ασφαλείας παρακάτω.",
+    "help_whitelist_ip": "Οι διευθύνσεις εδώ δεν μπλοκάρονται ποτέ, ούτε μετά από αποτυχημένες συνδέσεις. Πρόσθεσε πρώτα το δικό σου IP για να μην κλειδωθείς απ’ έξω.",
+    "help_block_settings": "Όριο: μετά από πόσες αποτυχημένες προσπάθειες γίνεται αυτόματος αποκλεισμός. Διάρκεια: πόσα δευτερόλεπτα κρατά ο αποκλεισμός. Πάτα Αποθήκευση μετά τις αλλαγές."
   }
 };
 
