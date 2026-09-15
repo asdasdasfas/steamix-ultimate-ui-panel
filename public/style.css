@@ -387,6 +387,52 @@ h5, h6 { color: var(--xc-text-primary); }
   .card { margin-bottom: 1rem; }
 }
 
+/* ===== CHANNEL MANAGER: roomy rows + panel headers ===== */
+#provider-channel-list .list-group-item,
+#user-channel-list .list-group-item,
+#category-list .list-group-item {
+  padding: 0.65rem 0.8rem;
+  gap: 0.6rem;
+  font-size: 13.5px;
+  margin-bottom: 4px;
+}
+#provider-channel-list .btn,
+#user-channel-list .btn { flex-shrink: 0; }
+#user-channel-list input[type="number"] { flex-shrink: 0; }
+#available-channels-header,
+#assigned-channels-header {
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: 11px;
+  color: var(--xc-orange);
+  border: none !important;
+  border-bottom: 2px solid var(--xc-border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0.35rem 0.2rem !important;
+}
+
+/* ===== FILTER PILLS: unmistakable selected state ===== */
+.btn-check:checked + .btn-outline-secondary {
+  background: linear-gradient(135deg, var(--xc-red), var(--xc-orange)) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  font-weight: 700;
+  box-shadow: 0 0 14px rgba(255,68,68,0.35);
+}
+.btn-check:checked + .btn-outline-primary {
+  background: linear-gradient(135deg, var(--xc-red), var(--xc-orange)) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  font-weight: 700;
+  box-shadow: 0 0 14px rgba(255,68,68,0.35);
+}
+.btn-check:focus + .btn-outline-secondary,
+.btn-check:focus + .btn-outline-primary {
+  box-shadow: 0 0 0 3px rgba(255,107,53,0.25);
+}
+
 /* ===== DARK SURFACES: native white elements ===== */
 #sidebar { flex-shrink: 0; }
 .form-check-input { background-color: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); }

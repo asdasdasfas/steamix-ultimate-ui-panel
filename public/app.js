@@ -3506,6 +3506,17 @@ document.addEventListener('DOMContentLoaded', () => {
       changePasswordForm.addEventListener('submit', handleChangePassword);
   }
 
+  // Trial presets: one click sets expiry to now + N hours (datetime-local, local time)
+  document.querySelectorAll('[data-expiry-preset]').forEach(btn => {
+      btn.addEventListener('click', () => {
+          const hours = Number(btn.dataset.expiryPreset);
+          const input = document.getElementById('edit-user-expiry-date');
+          if (input && Number.isFinite(hours) && hours > 0) {
+              input.value = formatLocalDateTime(new Date(Date.now() + hours * 3600 * 1000));
+          }
+      });
+  });
+
   // Check authentication on page load
   checkAuthentication();
 

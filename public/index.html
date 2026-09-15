@@ -422,17 +422,17 @@
                              </div>
                              <select id="channel-provider-select" class="form-select form-select-sm mb-2" data-i18n-label="selectProvider"></select>
 
-                             <div class="row g-2">
-                                <div class="col-6">
-                                   <div class="border rounded p-1 small text-center mb-1" id="available-channels-header">Available</div>
-                                   <div class="input-group input-group-sm mb-1">
-                                      <input type="text" id="provider-channel-search" class="form-control" data-i18n-placeholder="searchAvailableChannels" data-i18n-label="searchAvailableChannels" placeholder="Search Available..." disabled />
-                                      <button class="btn btn-outline-secondary d-none" type="button" id="provider-channel-search-clear" data-i18n-label="clearSearch" data-i18n-title="clearSearch"><span aria-hidden="true">✕</span></button>
-                                   </div>
-                                   <ul id="provider-channel-list" class="list-group small mt-1 max-h-300-scroll"></ul>
-                                </div>
-                                <div class="col-6">
-                                   <div class="border rounded p-1 small text-center mb-1" id="assigned-channels-header">Assigned</div>
+                              <div class="row g-3">
+                                 <div class="col-12">
+                                    <div class="border rounded p-1 small text-center mb-1" id="available-channels-header">Available</div>
+                                    <div class="input-group input-group-sm mb-1">
+                                       <input type="text" id="provider-channel-search" class="form-control" data-i18n-placeholder="searchAvailableChannels" data-i18n-label="searchAvailableChannels" placeholder="Search Available..." disabled />
+                                       <button class="btn btn-outline-secondary d-none" type="button" id="provider-channel-search-clear" data-i18n-label="clearSearch" data-i18n-title="clearSearch"><span aria-hidden="true">✕</span></button>
+                                    </div>
+                                    <ul id="provider-channel-list" class="list-group small mt-1 max-h-400-scroll"></ul>
+                                 </div>
+                                 <div class="col-12">
+                                    <div class="border rounded p-1 small text-center mb-1" id="assigned-channels-header">Assigned</div>
                                    <div class="input-group input-group-sm mb-1">
                                       <input type="text" id="user-channel-search" class="form-control" data-i18n-placeholder="searchAssignedChannels" data-i18n-label="searchAssignedChannels" placeholder="Search Assigned..." disabled />
                                       <button class="btn btn-outline-secondary d-none" type="button" id="user-channel-search-clear" data-i18n-label="clearSearch" data-i18n-title="clearSearch"><span aria-hidden="true">✕</span></button>
@@ -446,7 +446,7 @@
                                           <button class="btn btn-sm btn-danger py-0 d-none" id="chan-bulk-delete-btn" data-i18n="del">Del</button>
                                       </div>
                                    </div>
-                                   <ul id="user-channel-list" class="list-group small mt-1 max-h-300-scroll"></ul>
+                                    <ul id="user-channel-list" class="list-group small mt-1 max-h-400-scroll"></ul>
                                 </div>
                              </div>
                           </div>
@@ -1350,10 +1350,16 @@
               <label class="form-label" data-i18n="maxConnections" for="edit-user-max-connections">Max Connections</label>
               <input type="number" class="form-control" id="edit-user-max-connections" data-i18n-placeholder="unlimitedConnections" placeholder="0 = Unlimited" min="0">
             </div>
-            <div class="mb-3">
-               <label class="form-label" data-i18n="expiryDate" for="edit-user-expiry-date">Expiry Date</label>
-               <input type="datetime-local" class="form-control" id="edit-user-expiry-date">
-            </div>
+             <div class="mb-3">
+                <label class="form-label" data-i18n="expiryDate" for="edit-user-expiry-date">Expiry Date</label>
+                <input type="datetime-local" class="form-control" id="edit-user-expiry-date">
+                <div class="d-flex flex-wrap gap-1 mt-2">
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-expiry-preset="3" data-i18n="preset_3h">3 Saat</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-expiry-preset="12" data-i18n="preset_12h">12 Saat</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-expiry-preset="24" data-i18n="preset_24h">24 Saat</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" data-expiry-preset="168" data-i18n="preset_7d">7 Gün</button>
+                </div>
+             </div>
             <div class="mb-3">
               <div class="d-flex justify-content-between align-items-end">
                 <label class="form-label mb-1" data-i18n="notes" for="edit-user-notes">Notes</label>
