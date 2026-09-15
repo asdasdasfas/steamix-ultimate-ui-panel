@@ -726,7 +726,8 @@ const translations = {
     "otp_label": "Verification Code",
     "hero_slogan": "Command your entire stream network from one panel",
     "status_online": "System Online",
-    "hero_sub": "Manage thousands of channels, create users, control streams and track statistics from one place."
+    "hero_sub": "Manage thousands of channels, create users, control streams and track statistics from one place.",
+    "live_match": "LIVE MATCH"
   },
   "tr": {
     "title": "Steamix TV ULTIMATE",
@@ -1451,7 +1452,8 @@ const translations = {
     "otp_label": "Doğrulama Kodu",
     "hero_slogan": "Tüm yayın ağını tek panelden yönet",
     "status_online": "Sistem Çevrimiçi",
-    "hero_sub": "Binlerce kanalı tek panelden yönetin. Kullanıcı oluşturun, akışları kontrol edin, istatistikleri takip edin."
+    "hero_sub": "Binlerce kanalı tek panelden yönetin. Kullanıcı oluşturun, akışları kontrol edin, istatistikleri takip edin.",
+    "live_match": "CANLI MAÇ"
   },
   "de": {
     "casting": "Wiedergabe auf externem Gerät",
@@ -2176,7 +2178,8 @@ const translations = {
     "otp_label": "Bestätigungscode",
     "hero_slogan": "Steuere dein gesamtes Stream-Netzwerk über ein Panel",
     "status_online": "System online",
-    "hero_sub": "Verwalte tausende Sender, erstelle Benutzer, steuere Streams und verfolge Statistiken an einem Ort."
+    "hero_sub": "Verwalte tausende Sender, erstelle Benutzer, steuere Streams und verfolge Statistiken an einem Ort.",
+    "live_match": "LIVE-SPIEL"
   },
   "fr": {
     "casting": "Diffusion sur un appareil externe",
@@ -2901,7 +2904,8 @@ const translations = {
     "otp_label": "Code de vérification",
     "hero_slogan": "Pilotez tout votre réseau de diffusion depuis un seul panneau",
     "status_online": "Système en ligne",
-    "hero_sub": "Gérez des milliers de chaînes, créez des utilisateurs, contrôlez les flux et suivez les statistiques depuis un seul endroit."
+    "hero_sub": "Gérez des milliers de chaînes, créez des utilisateurs, contrôlez les flux et suivez les statistiques depuis un seul endroit.",
+    "live_match": "MATCH EN DIRECT"
   },
   "el": {
     "casting": "Μετάδοση σε εξωτερική συσκευή",
@@ -3626,7 +3630,8 @@ const translations = {
     "otp_label": "Κωδικός επαλήθευσης",
     "hero_slogan": "Διαχειρίσου όλο το δίκτυο streaming από ένα πάνελ",
     "status_online": "Το σύστημα είναι online",
-    "hero_sub": "Διαχειρίσου χιλιάδες κανάλια, δημιούργησε χρήστες, έλεγξε τα streams και παρακολούθησε στατιστικά από ένα σημείο."
+    "hero_sub": "Διαχειρίσου χιλιάδες κανάλια, δημιούργησε χρήστες, έλεγξε τα streams και παρακολούθησε στατιστικά από ένα σημείο.",
+    "live_match": "ΖΩΝΤΑΝΟΣ ΑΓΩΝΑΣ"
   }
 };
 
