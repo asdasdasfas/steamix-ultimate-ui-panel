@@ -13,7 +13,7 @@
 <body>
 
 <!-- SPLASH -->
-<div id="splash" onclick="this.style.opacity='0';setTimeout(()=>this.remove(),400)" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0a0a0f 0%,#111118 40%,#1a0a0a 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;transition:opacity 0.8s ease;cursor:pointer;animation:splashHide 0.8s ease 2.5s forwards;overflow:hidden">
+<div id="splash" style="position:fixed;inset:0;z-index:9999;background:linear-gradient(135deg,#0a0a0f 0%,#111118 40%,#1a0a0a 100%);display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;transition:opacity 0.8s ease;cursor:pointer;animation:splashHide 0.8s ease 2.5s forwards;overflow:hidden">
   <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(800px 400px at 50% 50%,rgba(255,68,68,0.15),transparent 60%),radial-gradient(400px 300px at 20% 80%,rgba(255,107,53,0.1),transparent),radial-gradient(400px 300px at 80% 20%,rgba(255,68,68,0.08),transparent)"></div>
   <div style="position:relative">
     <div style="position:absolute;inset:-20px;background:radial-gradient(circle,rgba(255,68,68,0.3),transparent 70%);filter:blur(20px);animation:splashPulse 1.4s ease-in-out infinite"></div>
@@ -1567,65 +1567,15 @@
     </div>
   </div>
 
-  <script>
-    // Sidebar sync + show when logged in
-    setInterval(()=>{
-      const nb=document.getElementById('main-navbar');
-      const sb=document.getElementById('sidebar');
-      if(nb && sb){
-        if(!nb.classList.contains('d-none')){ sb.classList.remove('d-none'); sb.classList.add('d-flex'); nb.classList.add('d-none'); }
-        else { /* login ekranında sidebar gizli kalsın */ }
-        const a=document.getElementById('language-selector'), b=document.getElementById('language-selector-side');
-        if(a&&b&&a.value!==b.value) b.value=a.value;
-      }
-    },500);
-    // sidebar nav active sync
-    document.addEventListener('click',e=>{
-      const t=e.target.closest('[data-view]'); if(!t) return;
-      document.querySelectorAll('#sidebar .nav-link').forEach(a=>a.classList.remove('active'));
-      const s=document.getElementById(t.id+'-side')||document.querySelector(`#sidebar [data-view="${t.getAttribute('data-view')}"]`);
-      if(s) s.classList.add('active');
-    });
-  </script>
+  
   <script src="vendor/bootstrap.bundle.min.js"></script>
   <script src="vendor/sortable.min.js"></script>
   <script src="i18n.js"></script>
   <script src="ai-i18n.js"></script>
   <script src="app.js"></script>
-<script>
-// splash: CSS animation hides it; remove node shortly after
-setTimeout(function(){ var s=document.getElementById('splash'); if(s){ s.style.opacity='0'; setTimeout(function(){ if(s) s.remove(); }, 900); } }, 2600);
-// app.js compatibility: login is a full page here, not a Bootstrap modal (look unchanged)
-window.showLoginModal = function(){
-  var l=document.getElementById('login-modal'); if(l) l.classList.remove('d-none');
-  var sh=document.getElementById('app-shell'); if(sh){ sh.classList.add('d-none'); sh.classList.remove('d-flex'); }
-  var nb=document.getElementById('main-navbar'); if(nb) nb.classList.add('d-none');
-  var mc=document.getElementById('main-content'); if(mc) mc.classList.add('d-none');
-};
-window.hideLoginModal = function(){
-  var l=document.getElementById('login-modal'); if(l) l.classList.add('d-none');
-  var sh=document.getElementById('app-shell'); if(sh){ sh.classList.remove('d-none'); sh.classList.add('d-flex'); }
-};
-document.addEventListener('DOMContentLoaded', function(){
-  if (typeof window.switchView === 'function') {
-    var _sw = window.switchView;
-    window.switchView = function(v){
-      _sw(v);
-      document.querySelectorAll('#sidebar .nav-link[data-view]').forEach(function(a){
-        var on = a.getAttribute('data-view')===v;
-        a.classList.toggle('active', on);
-        a.style.color = on ? '#ff6b35' : '#9ca3af';
-      });
-    };
-  }
-  var side=document.getElementById('language-selector-side'), main=document.getElementById('language-selector');
-  if(side && main){
-    side.addEventListener('change', function(){ main.value=side.value; main.dispatchEvent(new Event('change')); });
-    main.addEventListener('change', function(){ var o=side.querySelector('option[value="' + main.value + '"]'); if(o) side.value=main.value; });
-  }
-});
-</script>
+
   <script src="ai.js"></script>
+<script src="xc-compat.js"></script>
 
   <!-- Toast Container -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3 z-1100" id="toast-container"></div>
