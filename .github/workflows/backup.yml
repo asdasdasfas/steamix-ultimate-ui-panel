@@ -27,10 +27,19 @@ jobs:
           [ -n "$ADMIN_USER" ] || { echo "ADMIN_USER secret eksik"; exit 1; }
           [ -n "$ADMIN_PASS" ] || { echo "ADMIN_PASS secret eksik"; exit 1; }
           [ -n "$EXPORT_PASS" ] || { echo "EXPORT_PASS secret eksik"; exit 1; }
+          PANEL_URL="$(printf '%s' "$PANEL_URL" | tr -d '[:space:]')"
+          case "$PANEL_URL" in
+            http://*|https://*) echo "adres semasi tamam";;
+            *) echo "adrese https:// eklendi"; PANEL_URL="https://$PANEL_URL";;
+          esac
+          PANEL_URL="${PANEL_URL%/}"
+          echo "adres uzunlugu: ${#PANEL_URL}, basi: [${PANEL_URL:0:8}]"
+          host="${PANEL_URL#https://}"; host="${host#http://}"; host="${host%%/*}"
+          getent hosts "$host" || echo "UYARI: DNS cozulemedi: $host"
           echo "Panel bekleniyor (en fazla 5 dk)..."
           WARMED=""
           for i in $(seq 1 30); do
-            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$PANEL_URL/" || echo "000")
+            if code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "$PANEL_URL/"); then :; else code="000"; fi
             echo "deneme $i -> $code"
             if [ "$code" = "200" ]; then WARMED=1; break; fi
             sleep 10
