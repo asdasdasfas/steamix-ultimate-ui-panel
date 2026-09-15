@@ -20,11 +20,15 @@ jobs:
           EXPORT_PASS: ${{ secrets.EXPORT_PASS }}
         run: |
           set -e
+          sudo apt-get update -qq && sudo apt-get install -y -qq jq
+          echo "PANEL_URL=$PANEL_URL"
           echo "Waiting for panel (up to 3 dk)..."
           for i in $(seq 1 18); do curl -s -o /dev/null -w "%{http_code}\n" "$PANEL_URL/" | grep -q 200 && break; echo "retry $i..."; sleep 10; done
           curl -s -o /dev/null -w "final:%{http_code}\n" "$PANEL_URL/"
           echo "Login..."
-          TOKEN=$(curl -s -X POST "$PANEL_URL/api/login" -H "Content-Type: application/json" -d "{\"username\":\"$ADMIN_USER\",\"password\":\"$ADMIN_PASS\"}" | jq -r .token)
+          RESP=$(curl -s -X POST "$PANEL_URL/api/login" -H "Content-Type: application/json" -d "{\"username\":\"$ADMIN_USER\",\"password\":\"$ADMIN_PASS\"}")
+          echo "Login resp: $RESP"
+          TOKEN=$(echo "$RESP" | jq -r .token)
           if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then echo "Login response:"; curl -s -X POST "$PANEL_URL/api/login" -H "Content-Type: application/json" -d "{\"username\":\"$ADMIN_USER\",\"password\":\"$ADMIN_PASS\"}"; echo ""; exit 1; fi
           echo "Export..."
           mkdir -p backups
