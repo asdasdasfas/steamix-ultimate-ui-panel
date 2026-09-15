@@ -6,6 +6,7 @@ import { providerSourceKey } from '../utils/helpers.js';
 import { normalizeContainerExtension } from '../utils/containerExtension.js';
 import { fetchSafe } from '../utils/network.js';
 import { PORT } from '../config/constants.js';
+import { expiryEpoch } from '../utils/stalker.js';
 import { episodeNameCache } from '../services/episodeCache.js';
 import {
   getOrCreateSeriesEpisodeAlias,
@@ -60,7 +61,7 @@ export const playerApi = async (req, res) => {
           message: '',
           auth: 1,
           status: 'Active',
-          exp_date: user.expiry_date ? Math.floor(new Date(user.expiry_date).getTime() / 1000).toString() : '1773864593',
+          exp_date: (expiryEpoch(user.expiry_date) || 1773864593).toString(),
           is_trial: '0',
           active_cons: activeCons,
           created_at: now.toString(),
