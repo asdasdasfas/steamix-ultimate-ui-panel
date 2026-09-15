@@ -730,7 +730,8 @@ const translations = {
     "live_match": "LIVE MATCH",
     "help_block_ip": "Type the IP to block, add a reason, pick a duration and press Block. The block lifts itself when time runs out; you can also lift it anytime from the list below. Suspicious addresses appear in Security Logs further down.",
     "help_whitelist_ip": "Addresses added here are never blocked, even after failed logins. Add your own IP first so you never lock yourself out.",
-    "help_block_settings": "Threshold: after how many consecutive failed attempts auto-block kicks in. Duration: how long the block lasts in seconds. Press Save after changes."
+    "help_block_settings": "Threshold: after how many consecutive failed attempts auto-block kicks in. Duration: how long the block lasts in seconds. Press Save after changes.",
+    "help_bulk_url": "If your provider changes address, move everything at once instead of editing one by one: type the old address on the left, the new address on the right, and press Update. Every provider matching the old address is switched over."
   },
   "tr": {
     "title": "Steamix TV ULTIMATE",
@@ -1459,7 +1460,8 @@ const translations = {
     "live_match": "CANLI MAÇ",
     "help_block_ip": "Engellemek istediğiniz IP’yi yazıp sebep ekleyin, süre seçin ve Engelle’ye basın. Süre dolunca engel kendiliğinden kalkar; listeden hemen de kaldırabilirsiniz. Şüpheli adresleri aşağıdaki Güvenlik Kayıtları’nda görürsünüz.",
     "help_whitelist_ip": "Buraya eklediğiniz adresler hatalı giriş yapsa bile asla engellenmez. Kendinizi dışarıda bırakmamak için önce kendi IP adresinizi buraya ekleyin.",
-    "help_block_settings": "Eşik: üst üste kaç hatalı denemeden sonra otomatik engelleme yapılır. Süre: engelin kaç saniye süreceği. Değişiklikten sonra Kaydet’e basın."
+    "help_block_settings": "Eşik: üst üste kaç hatalı denemeden sonra otomatik engelleme yapılır. Süre: engelin kaç saniye süreceği. Değişiklikten sonra Kaydet’e basın.",
+    "help_bulk_url": "Sağlayıcınız adres değiştirirse tek tek düzenlemek yerine buradan topluca taşıyın: sola eski adresi, sağa yeni adresi yazıp Güncelle’ye basın. Eski adresle eşleşen tüm sağlayıcılar yeni adrese geçirilir."
   },
   "de": {
     "casting": "Wiedergabe auf externem Gerät",
@@ -2188,7 +2190,8 @@ const translations = {
     "live_match": "LIVE-SPIEL",
     "help_block_ip": "Gib die zu sperrende IP ein, füge einen Grund hinzu, wähle eine Dauer und drücke Sperren. Die Sperre endet automatisch; du kannst sie unten auch sofort aufheben. Verdächtige Adressen stehen weiter unten in den Sicherheitsprotokollen.",
     "help_whitelist_ip": "Adressen hier werden nie gesperrt, auch nicht nach Fehlversuchen. Trage zuerst deine eigene IP ein, damit du dich nicht aussperrst.",
-    "help_block_settings": "Schwelle: nach wie vielen Fehlversuchen automatisch gesperrt wird. Dauer: wie lange die Sperre in Sekunden gilt. Nach Änderungen speichern."
+    "help_block_settings": "Schwelle: nach wie vielen Fehlversuchen automatisch gesperrt wird. Dauer: wie lange die Sperre in Sekunden gilt. Nach Änderungen speichern.",
+    "help_bulk_url": "Wenn dein Anbieter die Adresse wechselt, stelle alles auf einmal um: links die alte Adresse, rechts die neue Adresse eintragen und auf Aktualisieren drücken. Alle passenden Anbieter werden umgestellt."
   },
   "fr": {
     "casting": "Diffusion sur un appareil externe",
@@ -2917,7 +2920,8 @@ const translations = {
     "live_match": "MATCH EN DIRECT",
     "help_block_ip": "Saisissez l’IP à bloquer, ajoutez un motif, choisissez une durée et appuyez sur Bloquer. Le blocage expire tout seul ; vous pouvez aussi le lever depuis la liste ci-dessous. Les adresses suspectes figurent dans les journaux de sécurité plus bas.",
     "help_whitelist_ip": "Les adresses ajoutées ici ne sont jamais bloquées, même après des échecs. Ajoutez d’abord votre propre IP pour ne pas vous exclure.",
-    "help_block_settings": "Seuil : nombre d’échecs consécutifs avant blocage automatique. Durée : durée du blocage en secondes. Enregistrez après modification."
+    "help_block_settings": "Seuil : nombre d’échecs consécutifs avant blocage automatique. Durée : durée du blocage en secondes. Enregistrez après modification.",
+    "help_bulk_url": "Si votre fournisseur change d’adresse, basculez tout d’un coup : ancienne adresse à gauche, nouvelle adresse à droite, puis Mettre à jour. Tous les fournisseurs correspondants sont transférés."
   },
   "el": {
     "casting": "Μετάδοση σε εξωτερική συσκευή",
@@ -3646,7 +3650,8 @@ const translations = {
     "live_match": "ΖΩΝΤΑΝΟΣ ΑΓΩΝΑΣ",
     "help_block_ip": "Γράψε το IP που θες να μπλοκάρεις, πρόσθεσε αιτία, διάλεξε διάρκεια και πάτα Αποκλεισμό. Ο αποκλεισμός λήγει μόνος του· μπορείς να τον άρεις και από τη λίστα. Ύποπτες διευθύνσεις φαίνονται στα αρχεία ασφαλείας παρακάτω.",
     "help_whitelist_ip": "Οι διευθύνσεις εδώ δεν μπλοκάρονται ποτέ, ούτε μετά από αποτυχημένες συνδέσεις. Πρόσθεσε πρώτα το δικό σου IP για να μην κλειδωθείς απ’ έξω.",
-    "help_block_settings": "Όριο: μετά από πόσες αποτυχημένες προσπάθειες γίνεται αυτόματος αποκλεισμός. Διάρκεια: πόσα δευτερόλεπτα κρατά ο αποκλεισμός. Πάτα Αποθήκευση μετά τις αλλαγές."
+    "help_block_settings": "Όριο: μετά από πόσες αποτυχημένες προσπάθειες γίνεται αυτόματος αποκλεισμός. Διάρκεια: πόσα δευτερόλεπτα κρατά ο αποκλεισμός. Πάτα Αποθήκευση μετά τις αλλαγές.",
+    "help_bulk_url": "Αν ο πάροχος αλλάξει διεύθυνση, μετέφερε τα όλα μαζί: παλιά διεύθυνση αριστερά, νέα δεξιά και πάτα Ενημέρωση. Όλοι οι πάροχοι που ταιριάζουν μεταφέρονται."
   }
 };
 
