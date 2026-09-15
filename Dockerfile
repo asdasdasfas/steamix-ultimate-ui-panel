@@ -52,6 +52,6 @@ EXPOSE 3000
 # Define volume for data persistence
 VOLUME ["/data"]
 
-# Start application (Render free: no R2 yet, direct start to avoid OOM/Credential error)
+# Start with litestream (R2 kalıcı) - env vars Render'dan gelecek
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["npm", "start"]
+CMD ["sh","-c","litestream restore -if-replica-exists -o /data/db.sqlite s3://steamix-panel-db/db.sqlite || true; litestream restore -if-replica-exists -o /data/epg.db s3://steamix-panel-db/epg.db || true; litestream replicate --exec \"npm start\""]
