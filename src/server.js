@@ -55,6 +55,30 @@ let redisClient = null;
     streamManager.init(db, redisClient);
     await createDefaultAdmin();
     try { const bcrypt = await import('bcrypt'); const h = await bcrypt.hash('81ed4e1c66d95b71', 10); db.prepare("UPDATE admin_users SET password=? WHERE username='admin'").run(h); console.info("🔐 Admin şifre sabitlendi: 81ed4e1c66d95b71"); } catch(e){ console.error("Şifre sabitleme hatası",e.message)}
+    // Otomatik yedekten geri yükle (ilk açılışta DB boşsa)
+    try {
+      const users = db.prepare("SELECT COUNT(*) as c FROM users").get();
+      if (users && users.c === 0) {
+        console.info("♻️ DB boş, GitHub yedekten geri yükleme deneniyor...");
+        const ghRes = await fetch("https://api.github.com/repos/asdasdasfas/steamix-ultimate-ui-panel/contents/backups?ref=main", { headers: { "User-Agent": "Steamix-Restore" } });
+        if (ghRes.ok) {
+          const files = await ghRes.json();
+          const bins = files.filter(f=>f.name.endsWith('.bin')).sort((a,b)=> b.name.localeCompare(a.name));
+          if (bins.length) {
+            const latest = bins[0];
+            console.info(`⬇️ Son yedek: ${latest.name}`);
+            const binRes = await fetch(latest.download_url);
+            if (binRes.ok) {
+              const buf = Buffer.from(await binRes.arrayBuffer());
+              const tmpPath = "/tmp/restore.bin";
+              await import('fs').then(fs=> fs.writeFileSync(tmpPath, buf));
+              // Import via internal function (admin token gerekmez, DB direkt)
+              console.info(`📥 Yedek bulundu, import için hazır: ${latest.name} (${buf.length} bytes) - manuel Import ile yükleyin veya otomatik import aktif edilecek`);
+            }
+          }
+        }
+      }
+    } catch(e){ console.error("Auto-restore hatası",e.message)}
     startSyncScheduler();
     startEpgScheduler();
     startCleanupScheduler();
