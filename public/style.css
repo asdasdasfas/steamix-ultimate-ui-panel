@@ -246,6 +246,13 @@ label, .form-label, .col-form-label { color: var(--xc-text-secondary); }
   background: rgba(255, 68, 68, 0.05);
   border-color: rgba(255, 68, 68, 0.2);
 }
+.list-group-item.active {
+  background: linear-gradient(135deg, rgba(255,68,68,0.25), rgba(255,107,53,0.18)) !important;
+  border-color: rgba(255,107,53,0.5) !important;
+  color: #fff !important;
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--xc-orange), 0 0 16px rgba(255,68,68,0.15);
+}
 
 /* ===== NAVBAR / SIDEBAR ===== */
 .navbar {
