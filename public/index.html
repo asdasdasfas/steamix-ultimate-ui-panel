@@ -290,8 +290,15 @@
 </div>
 
 <script>
-// Splash auto-hide
-setTimeout(function(){ var s=document.getElementById('splash'); if(s){s.style.opacity='0';setTimeout(function(){if(s)s.remove()},800);} }, 2500);
+// Splash auto-hide + show login
+setTimeout(function(){ 
+  var s=document.getElementById('splash'); if(s){s.style.opacity='0';setTimeout(function(){if(s)s.remove()},800);}
+  // Show login page after splash
+  setTimeout(function(){
+    var lp=document.getElementById('login-modal');
+    if(lp) lp.classList.remove('d-none');
+  }, 100);
+}, 2500);
 
 // Password change modal triggers
 document.addEventListener('DOMContentLoaded', function() {
