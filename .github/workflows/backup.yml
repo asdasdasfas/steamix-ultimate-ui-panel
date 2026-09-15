@@ -2,7 +2,7 @@ name: Auto Backup
 
 on:
   schedule:
-    - cron: '0 * * * *'  # her saat
+    - cron: '*/15 * * * *'  # her 15 dk
   workflow_dispatch:
 
 jobs:
