@@ -1,0 +1,23 @@
+name: Keep Alive
+
+on:
+  schedule:
+    - cron: '*/14 * * * *'  # her 14 dk (Render 15 dk uyur, 14 te onu aşar)
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Render'a istek at (uyanık tut)
+        run: |
+          for i in 1 2 3; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 60 "https://steamix-ultimate-ui-panel.onrender.com/")
+            echo "ping $i -> HTTP $code"
+            if [ "$code" = "200" ] || [ "$code" = "302" ] || [ "$code" = "403" ]; then
+              echo "OK - panel ayakta"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Panel yanıt vermedi ama workflow başarılı sayıldı (uyanma sürebilir)"
