@@ -4736,19 +4736,14 @@ async function checkAuthentication() {
     currentUser = res.user;
     
     // Apply role-based UI
-    if (currentUser.force_password_change) {
-        showChangePasswordModal();
-        alert(t('force_password_change') || 'You must change your password immediately.');
-        // Do NOT show main UI
-        return true;
-    }
+    hideLoginModal();
 
     applyPermissions();
 
     // Show the main UI if token is valid
     document.getElementById('main-navbar').classList.remove('d-none');
     document.getElementById('main-content').classList.remove('d-none');
-    
+
     loadUsers();
     loadProviders();
     loadEpgSources();
@@ -4756,6 +4751,11 @@ async function checkAuthentication() {
     if (globalStatsInterval) clearInterval(globalStatsInterval);
     globalStatsInterval = setInterval(updateDashboardCounters, 15000);
     updateDashboardCounters();
+
+    if (currentUser.force_password_change) {
+        showChangePasswordModal();
+        alert(t('force_password_change') || 'You must change your password immediately.');
+    }
 
     return true;
   } catch {
@@ -4876,13 +4876,6 @@ async function handleLogin(event) {
     
     hideLoginModal();
 
-    if (currentUser.force_password_change) {
-        showChangePasswordModal();
-        // Force the modal to be non-closable or just persistent
-        alert(t('force_password_change') || 'You must change your password immediately.');
-        return;
-    }
-
     applyPermissions();
     
     // Show the main UI after successful login
@@ -4896,6 +4889,12 @@ async function handleLogin(event) {
     if (globalStatsInterval) clearInterval(globalStatsInterval);
     globalStatsInterval = setInterval(updateDashboardCounters, 15000);
     updateDashboardCounters();
+
+    if (currentUser.force_password_change) {
+        showChangePasswordModal();
+        // Force the modal to be non-closable or just persistent
+        alert(t('force_password_change') || 'You must change your password immediately.');
+    }
 
     // Clear form
     document.getElementById('login-username').value = '';
