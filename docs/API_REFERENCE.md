@@ -499,6 +499,12 @@ whose episodes have not been synced yet are omitted because a series assignment
 ID is not a playable episode ID. Provider synchronization populates the episode
 cache in the background; playlist requests never wait indefinitely for it.
 
+`get.php` requires `direct=1` for normal user credentials and then emits
+provider-direct stream URLs, so video bytes never flow through this panel
+(no bandwidth usage here). Requests without `direct=1` are rejected with
+`403 { error: 'direct_required' }`. Share-guest token links are exempt and
+keep panel-proxied URLs.
+
 Provider-controlled container extensions are normalized when stored and again
 when a public or upstream URL is generated. Known MIME types are mapped to
 their standard suffixes, and values containing path, query, fragment, percent,

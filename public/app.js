@@ -736,7 +736,7 @@ function renderUserDetails(u) {
     // Update M3U Link
     const m3uLinkEl = document.getElementById('m3u-link');
     if (m3uLinkEl) {
-        m3uLinkEl.value = `${baseUrl}/get.php?username=${encodeURIComponent(u.username)}&password=${encodeURIComponent(pass)}&type=m3u_plus&output=ts`;
+        m3uLinkEl.value = `${baseUrl}/get.php?username=${encodeURIComponent(u.username)}&password=${encodeURIComponent(pass)}&type=m3u_plus&output=ts&direct=1`;
     }
 
     // Update HDHomeRun Tab
@@ -3180,7 +3180,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const m3uLinkEl = document.getElementById('m3u-link');
   if (m3uLinkEl) {
       const baseUrl = window.location.origin;
-      m3uLinkEl.value = `${baseUrl}/get.php?username=DUMMY&password=DUMMY&type=m3u_plus&output=ts`;
+      m3uLinkEl.value = `${baseUrl}/get.php?username=DUMMY&password=DUMMY&type=m3u_plus&output=ts&direct=1`;
   }
   
   const importBtn = document.getElementById('import-categories-btn');
@@ -5680,3 +5680,234 @@ async function deleteUserBackup(backupId, backupName) {
         showToast(t('errorPrefix') + ' ' + e.message, 'danger');
     }
 }
+
+// === Direkt sağlayıcı testi (Worker yok, tarayıcı -> CTN34 direkt) ===
+// Sadece test amaçlı: formdaki URL/kullanıcı/şifre ile sağlayıcıya direkt gider,
+// ilk 20 kanalı listeler, Oynat'a basınca videoyu direkt sağlayıcı URL'sinden açar.
+// Not: .ts tarayıcıda direkt oynamaz, mpegts.js ile açılır (gerekirse yüklenir).
+var directFlvPlayer = null;
+var directHlsPlayer = null;
+var directPlayToken = 0;
+
+function directStopPlayers() {
+    directPlayToken += 1;
+    var videoEl = document.getElementById('direct-test-video');
+    try {
+        if (directFlvPlayer) {
+            try { directFlvPlayer.pause(); } catch {}
+            try { directFlvPlayer.unload(); } catch {}
+            try { directFlvPlayer.detachMediaElement(); } catch {}
+            try { directFlvPlayer.destroy(); } catch {}
+        }
+    } catch {}
+    directFlvPlayer = null;
+    try {
+        if (directHlsPlayer) { try { directHlsPlayer.destroy(); } catch {} }
+    } catch {}
+    directHlsPlayer = null;
+    if (videoEl) {
+        try { videoEl.pause(); } catch {}
+        videoEl.removeAttribute('src');
+        try { videoEl.load(); } catch {}
+    }
+}
+
+function loadVendorScriptOnce(src) {
+    return new Promise(function(resolve, reject) {
+        var exist = document.querySelector('script[data-direct-vendor="' + src + '"]');
+        if (exist) {
+            if (exist.dataset.loaded === '1') return resolve();
+            exist.addEventListener('load', function() { resolve(); });
+            exist.addEventListener('error', function() { reject(new Error('script yüklenemedi')); });
+            return;
+        }
+        var s = document.createElement('script');
+        s.src = src;
+        s.dataset.directVendor = src;
+        s.onload = function() { s.dataset.loaded = '1'; resolve(); };
+        s.onerror = function() { reject(new Error('script yüklenemedi')); };
+        document.head.appendChild(s);
+    });
+}
+
+// Video takılırsa (ör. http sağlayıcı https sayfada engellenirse) sonsuz
+// dönmek yerine VLC linkini gösterir.
+function directWatchdog(stream, myToken) {
+    var videoEl = document.getElementById('direct-test-video');
+    var resEl = document.getElementById('direct-test-result');
+    if (!videoEl || !resEl) return;
+    setTimeout(function() {
+        if (myToken !== directPlayToken) return;
+        var playing = !videoEl.paused && !videoEl.ended && videoEl.readyState > 2;
+        if (!playing) {
+            resEl.textContent = 'Tarayıcı açamadı (takıldı), VLC ile dene: ' + stream;
+        }
+    }, 12000);
+    videoEl.onerror = function() {
+        if (myToken !== directPlayToken) return;
+        resEl.textContent = 'Tarayıcı açamadı (hata), VLC ile dene: ' + stream;
+    };
+}
+
+// http sağlayıcı https sayfada oynamaz (tarayıcı kuralı). Bu durumda test
+// akışı Worker üzerindeki /api/proxy/test adresinden geçirilir (yönetici,
+// bilinen sağlayıcı hostu). Normal izleme yine direkt linkten yapılır.
+function proxiedTestUrl(directUrl) {
+    try {
+        if (location.protocol === 'https:' && /^http:\/\//i.test(directUrl)) {
+            var t = (typeof getToken === 'function') ? getToken() : '';
+            if (t) return '/api/proxy/test?url=' + encodeURIComponent(directUrl) + '&token=' + encodeURIComponent(t);
+        }
+    } catch (e) {}
+    return directUrl;
+}
+
+async function playDirectTs(stream, name) {
+    var resEl = document.getElementById('direct-test-result');
+    var videoEl = document.getElementById('direct-test-video');
+    directStopPlayers();
+    var myToken = directPlayToken;
+    videoEl.style.display = 'block';
+    resEl.textContent = 'Açılıyor (direkt TS): ' + name;
+    directWatchdog(stream, myToken);
+    var playUrl = proxiedTestUrl(stream);
+    try {
+        if (typeof mpegts === 'undefined') await loadVendorScriptOnce('vendor/mpegts.min.js');
+        if (typeof mpegts === 'undefined' || !mpegts.isSupported()) throw new Error('mpegts desteklenmiyor');
+        directFlvPlayer = mpegts.createPlayer({ type: 'mpegts', isLive: true, url: playUrl });
+        directFlvPlayer.attachMediaElement(videoEl);
+        try {
+            if (directFlvPlayer.on && mpegts.Events && mpegts.Events.ERROR) {
+                directFlvPlayer.on(mpegts.Events.ERROR, function() {
+                    resEl.textContent = 'Sağlayıcı videoyu vermedi, VLC ile dene: ' + stream;
+                });
+            }
+        } catch (e2) {}
+        directFlvPlayer.load();
+        await directFlvPlayer.play();
+        resEl.textContent = 'Oynatılıyor (direkt TS): ' + name;
+    } catch (e) {
+        resEl.textContent = 'Tarayıcı açamadı, VLC ile dene: ' + stream;
+    }
+}
+
+async function playDirectHls(stream, name) {
+    var resEl = document.getElementById('direct-test-result');
+    var videoEl = document.getElementById('direct-test-video');
+    directStopPlayers();
+    var myToken = directPlayToken;
+    videoEl.style.display = 'block';
+    resEl.textContent = 'Açılıyor (direkt M3U8): ' + name;
+    directWatchdog(stream, myToken);
+    var playUrl = proxiedTestUrl(stream);
+    try {
+        if (videoEl.canPlayType('application/vnd.apple.mpegurl')) {
+            videoEl.src = playUrl;
+            await videoEl.play();
+            resEl.textContent = 'Oynatılıyor (direkt M3U8): ' + name;
+            return;
+        }
+        if (typeof Hls === 'undefined') await loadVendorScriptOnce('vendor/hls.min.js');
+        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+            directHlsPlayer = new Hls();
+            directHlsPlayer.loadSource(playUrl);
+            directHlsPlayer.attachMedia(videoEl);
+            directHlsPlayer.on(Hls.Events.MANIFEST_PARSED, function() {
+                videoEl.play().catch(function() {
+                    resEl.textContent = 'Tarayıcı açamadı, VLC ile dene: ' + stream;
+                });
+            });
+            directHlsPlayer.on(Hls.Events.ERROR, function(ev, data) {
+                if (data && data.fatal) resEl.textContent = 'Tarayıcı açamadı, VLC ile dene: ' + stream;
+            });
+            resEl.textContent = 'Oynatılıyor (direkt M3U8): ' + name;
+            return;
+        }
+        videoEl.src = playUrl;
+        await videoEl.play();
+        resEl.textContent = 'Oynatılıyor (direkt M3U8): ' + name;
+    } catch (e) {
+        resEl.textContent = 'Tarayıcı açamadı, VLC ile dene: ' + stream;
+    }
+}
+async function directProviderTest() {
+    const urlEl = document.getElementById('provider-url');
+    const userEl = document.getElementById('provider-username');
+    const passEl = document.getElementById('provider-password');
+    const resEl = document.getElementById('direct-test-result');
+    const listEl = document.getElementById('direct-test-list');
+    const videoEl = document.getElementById('direct-test-video');
+    if (!urlEl || !userEl || !passEl || !resEl || !listEl || !videoEl) return;
+    const base = String(urlEl.value || '').trim().replace(/\/+$/, '');
+    const u = String(userEl.value || '').trim();
+    const p = String(passEl.value || '');
+    const uaEl = document.getElementById('provider-user-agent');
+    const ua = uaEl ? String(uaEl.value || '').trim() : '';
+    listEl.innerHTML = '';
+    directStopPlayers();
+    videoEl.style.display = 'none';
+    if (!base || !u || !p) {
+        resEl.textContent = 'Önce URL + kullanıcı + şifre yaz.';
+        return;
+    }
+    resEl.textContent = 'Direkt bağlanıyor (Worker yok): ' + base;
+    if (location.protocol === 'https:' && /^http:\/\//i.test(base)) {
+        resEl.textContent = 'Not: Sayfa https, sağlayıcı http. Tarayıcı buna izin vermez (Mixed Content). Aşağıdaki VLC linkini kullan, ya da sağlayıcıya https ile erişiliyorsa URL kutusuna https yaz.';
+        const m3u = base + '/get.php?username=' + encodeURIComponent(u) + '&password=' + encodeURIComponent(p) + '&type=m3u_plus&output=ts&direct=1';
+        const vlcRow = document.createElement('div');
+        vlcRow.className = 'small mt-1';
+        vlcRow.textContent = 'VLC ile aç: ' + m3u;
+        listEl.appendChild(vlcRow);
+    }
+    try {
+        const api = base + '/player_api.php?username=' + encodeURIComponent(u) + '&password=' + encodeURIComponent(p) + '&action=get_live_streams';
+        const r = await fetch(api);
+        if (!r.ok) throw new Error('Sağlayıcı cevap: HTTP ' + r.status);
+        const arr = await r.json();
+        if (!Array.isArray(arr) || arr.length === 0) throw new Error('Liste boş döndü.');
+        const first = arr.slice(0, 20);
+        resEl.textContent = 'Tamam: ' + arr.length + ' kanal bulundu (ilk ' + first.length + '). Oynat bas.' + (ua ? ' Not: Tarayıcı özel User-Agent gönderemez, olmazsa VLC ile dene.' : '');
+        first.forEach(function(ch) {
+            const id = ch.stream_id;
+            const name = ch.name || ('Kanal ' + id);
+            const row = document.createElement('div');
+            row.className = 'list-group-item d-flex justify-content-between align-items-center py-1';
+            const span = document.createElement('span');
+            span.textContent = name;
+            span.style.cssText = 'flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:8px;font-size:13px';
+            const btnWrap = document.createElement('div');
+            btnWrap.className = 'btn-group btn-group-sm';
+            const btn = document.createElement('button');
+            btn.className = 'btn btn-success';
+            btn.textContent = 'TS';
+            btn.title = 'Direkt .ts oynat';
+            btn.onclick = function() {
+                playDirectTs(base + '/live/' + encodeURIComponent(u) + '/' + encodeURIComponent(p) + '/' + id + '.ts', name);
+            };
+            const btnHls = document.createElement('button');
+            btnHls.className = 'btn btn-outline-success';
+            btnHls.textContent = 'M3U8';
+            btnHls.title = 'Direkt .m3u8 oynat';
+            btnHls.onclick = function() {
+                playDirectHls(base + '/live/' + encodeURIComponent(u) + '/' + encodeURIComponent(p) + '/' + id + '.m3u8', name);
+            };
+            btnWrap.appendChild(btn);
+            btnWrap.appendChild(btnHls);
+            row.appendChild(span);
+            row.appendChild(btnWrap);
+            listEl.appendChild(row);
+        });
+    } catch (e) {
+        const msg = (e && e.message ? e.message : String(e));
+        const mixed = (location.protocol === 'https:' && /^http:\/\//i.test(base));
+        resEl.textContent = 'Direkt test olmadı: ' + msg + (mixed ? ' — Bu normal: https sayfadan http sağlayıcıya tarayıcı izin vermez. VLC linkini kullan.' : ' — Tarayıcı engellediyse (CORS) VLC ile dene.');
+    }
+}
+
+(function wireDirectProviderTest() {
+    const b = document.getElementById('direct-test-provider-btn');
+    if (b && !b.dataset.wired) {
+        b.dataset.wired = '1';
+        b.addEventListener('click', directProviderTest);
+    }
+})();

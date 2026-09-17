@@ -560,15 +560,35 @@ function escapeHtml(unsafe) {
   }
 
   // ─── Init ───
+  // Token oturumu bitmişse (401/403) boş hata yerine ana sayfaya döndüren
+  // bir ekran göster: link kopyalanmış ya da çerez silinmiş olabilir.
+  function showSessionExpired() {
+    try {
+      loadingEl.style.display = 'flex';
+      loadingEl.classList.remove('d-none');
+      loadingEl.innerHTML = '<div style="text-align:center;padding:24px;max-width:420px">'
+        + '<div style="font-size:16px;margin-bottom:8px">Oturum bitmiş ya da bu sekmede açılmamış.</div>'
+        + '<div class="text-muted" style="font-size:13px;margin-bottom:16px">Ana sayfaya dön, kullanıcı seçip Play tuşuna taze bas. Link kopyalayıp yapıştırma.</div>'
+        + '<button id="back-to-app" class="btn btn-primary">Ana Sayfaya Dön</button></div>';
+      var b = document.getElementById('back-to-app');
+      if (b) b.onclick = function() { window.location.href = '/index.html'; };
+    } catch (ign) {}
+  }
+
   async function init() {
     loadingEl.style.display = 'flex';
     loadingEl.classList.remove('d-none');
     var loadingTextSpan = loadingEl.querySelector('span');
     if (loadingTextSpan) loadingTextSpan.textContent = t('loadingChannels') || 'Loading Channels...';
+    var sessionExpired = false;
     try {
       // 1. Fetch Channels
       var res = await fetch('/api/player/channels.json?' + getAuthParams());
-      if (!res.ok) throw new Error(t('channelsFetchError') + ': ' + res.status);
+      if (!res.ok) {
+        var err = new Error(t('channelsFetchError') + ': ' + res.status);
+        err.status = res.status;
+        throw err;
+      }
       allChannels = await res.json();
       var maxCatchupDays = 0;
       allChannels.forEach(function(ch) {
@@ -602,9 +622,11 @@ function escapeHtml(unsafe) {
     } catch (e) {
       console.error('Init error:', e);
       showToast(t('errorLoadingData') + ': ' + escapeHtml(e.message), 'danger', 10000);
+      if (token && e && (e.status === 401 || e.status === 403)) sessionExpired = true;
     } finally {
       loadingEl.style.display = 'none';
       loadingEl.classList.add('d-none');
+      if (sessionExpired) showSessionExpired();
     }
   }
 

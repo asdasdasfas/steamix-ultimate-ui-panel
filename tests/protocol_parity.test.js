@@ -225,7 +225,7 @@ describe('real protocol output parity', () => {
       expect(new Set(items.map(({ id }) => id))).toEqual(new Set(xtreamByType[type].map(({ stream_id, series_id }) => String(stream_id ?? series_id))));
     }
 
-    const playlistResponse = await request(app).get('/get.php').query({ ...credentials, type: 'm3u_plus' });
+    const playlistResponse = await request(app).get('/get.php').query({ ...credentials, type: 'm3u_plus', direct: '1' });
     expect(playlistResponse.status).toBe(200);
     const playlistText = playlistResponse.text || playlistResponse.body?.toString('utf8') || '';
     const playlist = parseM3U(playlistText);
@@ -247,7 +247,22 @@ describe('real protocol output parity', () => {
       'Fixture Unauthorized Series',
       'Fixture Unsynchronized Series',
     ]));
-    expect(playlistText).not.toContain('upstream-pass');
     expect(playlistText).not.toContain('foreign-pass');
+  });
+
+  it('rejects playlists without direct=1 (bandwidth guard)', async () => {
+    const res = await request(app).get('/get.php').query({ ...credentials, type: 'm3u_plus' });
+    expect(res.status).toBe(403);
+    expect(res.body).toEqual(expect.objectContaining({ error: 'direct_required' }));
+  });
+
+  it('emits provider-direct urls with direct=1', async () => {
+    const direct = await request(app).get('/get.php').query({ ...credentials, type: 'm3u_plus', direct: '1' });
+    expect(direct.status).toBe(200);
+    const directText = direct.text || direct.body?.toString('utf8') || '';
+    expect(directText).toContain('https://upstream.fixture.invalid/panel/live/upstream-user/upstream-pass/42.ts');
+    expect(directText).toContain('https://upstream.fixture.invalid/panel/movie/upstream-user/upstream-pass/200.mp4');
+    expect(directText).not.toContain('/live/parity-user/');
+    expect(directText).not.toContain('foreign-pass');
   });
 });

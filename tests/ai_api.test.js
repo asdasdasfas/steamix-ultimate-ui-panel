@@ -259,7 +259,7 @@ describe('AI management boundary', () => {
       expect(db.prepare('SELECT custom_name,assignment_origin FROM user_channels WHERE id=?').get(assignment)).toEqual({custom_name:'News',assignment_origin:'manual'});
       const xtream=await request(app).get('/player_api.php').query({username:'ai-user',password:'test-password',action:'get_live_streams'}).expect(200);
       expect(xtream.body).toEqual(expect.arrayContaining([expect.objectContaining({name:'News'})]));
-      const playlist=await request(app).get('/get.php').query({username:'ai-user',password:'test-password',type:'m3u_plus'}).expect(200);
+      const playlist=await request(app).get('/get.php').query({username:'ai-user',password:'test-password',type:'m3u_plus',direct:'1'}).expect(200);
       expect(playlist.text ?? playlist.body.toString('utf8')).toContain('News');
       const mac='02:00:00:00:09:10';
       db.prepare("INSERT INTO stalker_devices(user_id,mac,model,serial_number,device_uid) VALUES (?,?,'MAG254','ai-parity-serial','ai-parity-device')").run(user.id,mac);

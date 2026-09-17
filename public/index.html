@@ -7,8 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="logo.svg">
   <link href="vendor/bootstrap.min.css" rel="stylesheet">
   <link href="vendor/bootstrap-icons.min.css" rel="stylesheet">
-  <link href="vendor/flag-icons/css/flag-icons.min.css" rel="stylesheet">
-  <link href="style.css?v=3" rel="stylesheet">
+  <link href="style.css?v=5" rel="stylesheet">
 </head>
 <body>
 
@@ -1534,10 +1533,16 @@
                 </div>
              </div>
           </div>
-          <div class="modal-footer">
-             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
-             <button type="submit" class="btn btn-primary" id="save-provider-btn" data-i18n="save">Save</button>
-          </div>
+           <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-i18n="close">Close</button>
+              <button type="button" class="btn btn-outline-info" id="direct-test-provider-btn">Direkt Test</button>
+              <button type="submit" class="btn btn-primary" id="save-provider-btn" data-i18n="save">Save</button>
+           </div>
+           <div class="px-3 pb-3">
+              <div id="direct-test-result" class="small text-muted"></div>
+              <div id="direct-test-list" class="list-group mt-2" style="max-height:200px;overflow:auto"></div>
+              <video id="direct-test-video" class="w-100 mt-2" controls playsinline style="display:none;max-height:240px;background:#000"></video>
+           </div>
         </form>
       </div>
     </div>
@@ -1660,12 +1665,12 @@
   
   <script src="vendor/bootstrap.bundle.min.js"></script>
   <script src="vendor/sortable.min.js"></script>
-  <script src="i18n.js?v=3"></script>
-  <script src="ai-i18n.js?v=3"></script>
-  <script src="app.js?v=3"></script>
+  <script src="i18n.js?v=5"></script>
+  <script src="ai-i18n.js?v=5"></script>
+  <script src="app.js?v=5"></script>
 
-  <script src="ai.js?v=3"></script>
-<script src="xc-compat.js?v=3"></script>
+  <script src="ai.js?v=5"></script>
+<script src="xc-compat.js?v=5"></script>
 
   <!-- Toast Container -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3 z-1100" id="toast-container"></div>

@@ -10,6 +10,7 @@ import {
   getOrCreateSeriesEpisodeAlias,
   prepareSeriesEpisodeAliases
 } from '../utils/seriesEpisodeId.js';
+import { decrypt } from '../utils/crypto.js';
 
 import {
   appendAllowedChannelFilter,
@@ -33,6 +34,22 @@ export const getPlaylist = async (req, res) => {
     if (!user) return res.sendStatus(401);
     const shareScope = getShareScope(user);
     if (shareScope.isExpired) return res.sendStatus(403);
+
+    // Direct-only guard: normal (non-guest) playlists REQUIRE direct=1 so
+    // video bytes always go provider-direct and never burn this host's
+    // bandwidth. Share-guest token links are exempt (they need panel URLs).
+    // NOTE: this intentionally breaks old M3U links without direct=1.
+    const useTokenAuth = shareScope.isShareGuest && !!req.query.token;
+    if (!useTokenAuth && String(req.query.direct || '') !== '1') {
+      return res.status(403).json({
+        error: 'direct_required',
+        message: 'Add &direct=1 to the playlist URL (provider-direct streams only).'
+      });
+    }
+    // direct=1 (enforced above): stream URLs point at the provider itself
+    // (provider-direct), so video bytes never flow through this panel.
+    // Share guests keep token-auth panel URLs.
+    const directMode = !useTokenAuth && String(req.query.direct || '') === '1';
 
     let query = `
       SELECT uc.id as user_channel_id, uc.custom_name, uc.user_category_id, pc.name, pc.logo, pc.epg_channel_id, pc.stream_type, pc.mime_type,
@@ -77,12 +94,56 @@ export const getPlaylist = async (req, res) => {
     // ⚡ Bolt: Pre-encode credentials and pre-construct URL prefixes outside of the tight loop.
     // 🎯 Why: Calling encodeURIComponent and interpolating complex templates 50,000+ times per request wastes massive CPU cycles.
     // 📊 Impact: Significantly speeds up playlist generation loop and reduces V8 garbage collection pressure.
-    const useTokenAuth = shareScope.isShareGuest && !!req.query.token;
     const encUser = encodeURIComponent(username);
     const encPass = encodeURIComponent(password);
     const livePrefix = useTokenAuth ? `${baseUrl}/live/token/auth/` : `${baseUrl}/live/${encUser}/${encPass}/`;
     const moviePrefix = useTokenAuth ? `${baseUrl}/movie/token/auth/` : `${baseUrl}/movie/${encUser}/${encPass}/`;
     const seriesPrefix = useTokenAuth ? `${baseUrl}/series/token/auth/` : `${baseUrl}/series/${encUser}/${encPass}/`;
+
+    // direct=1: per-provider cleartext credentials, decrypted once per
+    // provider (NOT per channel). Undecryptable providers fall back to the
+    // panel proxy prefixes above — never emit garbage URLs.
+    const directCredsCache = new Map();
+    const directCredsFor = (providerId) => {
+      if (!directMode || providerId === null || providerId === undefined) return null;
+      if (directCredsCache.has(providerId)) return directCredsCache.get(providerId);
+      let out = null;
+      try {
+        const row = db.prepare('SELECT url, username, password FROM providers WHERE id = ?').get(providerId);
+        if (row && row.url && row.username && row.password) {
+          const pass = decrypt(row.password);
+          if (typeof pass === 'string' && pass) {
+            const base = String(row.url).replace(/\/+$/, '');
+            if (/^https?:\/\//i.test(base)) {
+              out = {
+                base,
+                user: encodeURIComponent(row.username),
+                pass: encodeURIComponent(pass)
+              };
+            }
+          }
+        }
+      } catch {
+        out = null;
+      }
+      directCredsCache.set(providerId, out);
+      return out;
+    };
+    const directLiveUrl = (ch, remoteId, ext) => {
+      const creds = directCredsFor(ch.provider_id);
+      if (!creds) return null;
+      return `${creds.base}/live/${creds.user}/${creds.pass}/${remoteId}.${ext}`;
+    };
+    const directMovieUrl = (ch, remoteId, ext) => {
+      const creds = directCredsFor(ch.provider_id);
+      if (!creds) return null;
+      return `${creds.base}/movie/${creds.user}/${creds.pass}/${remoteId}.${ext}`;
+    };
+    const directSeriesUrl = (ch, episodeRemoteId, ext) => {
+      const creds = directCredsFor(ch.provider_id);
+      if (!creds) return null;
+      return `${creds.base}/series/${creds.user}/${creds.pass}/${episodeRemoteId}.${ext}`;
+    };
 
     // Episodes synced from the provider (see syncSeriesEpisodes). Series are
     // expanded into one entry per episode like a native Xtream panel does.
@@ -147,9 +208,12 @@ export const getPlaylist = async (req, res) => {
               ep.remote_episode_id
             );
             if (!episodeId) continue;
-            let episodeUrl = seriesPrefix + episodeId + '.' + normalizeContainerExtension(ep.container_extension);
+            const epExt = normalizeContainerExtension(ep.container_extension);
+            let episodeUrl = seriesPrefix + episodeId + '.' + epExt;
             if (useTokenAuth) {
               episodeUrl += tokenParam;
+            } else if (directMode) {
+              episodeUrl = directSeriesUrl(ch, ep.remote_episode_id, epExt) || episodeUrl;
             }
 
             if (type === 'm3u_plus') {
@@ -172,9 +236,17 @@ export const getPlaylist = async (req, res) => {
 
       let streamUrl;
       if (ch.stream_type === 'movie') {
-         streamUrl = moviePrefix + streamId + '.' + normalizeContainerExtension(ch.mime_type);
+         const ext = normalizeContainerExtension(ch.mime_type);
+         streamUrl = moviePrefix + streamId + '.' + ext;
+         if (!useTokenAuth && directMode) {
+           streamUrl = directMovieUrl(ch, ch.remote_stream_id, ext) || streamUrl;
+         }
       } else {
-         streamUrl = livePrefix + streamId + '.' + (output === 'hls' ? 'm3u8' : 'ts');
+         const ext = output === 'hls' ? 'm3u8' : 'ts';
+         streamUrl = livePrefix + streamId + '.' + ext;
+         if (!useTokenAuth && directMode) {
+           streamUrl = directLiveUrl(ch, ch.remote_stream_id, ext) || streamUrl;
+         }
       }
       if (useTokenAuth) {
         streamUrl += tokenParam;
